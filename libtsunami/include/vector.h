@@ -12,6 +12,7 @@
 #define __TSUNAMI_VECTOR_H
 
 #include <kos/vector.h>
+#include <assert.h>
 
 #ifdef _arch_dreamcast
 #	include <dc/fmath.h>
