@@ -16,10 +16,12 @@
 class Death : public Trigger {
 public:
 	// Constructor / Destructor
-	Death();
+	Death(Drawable * target = NULL);
 	virtual ~Death();
 
 	virtual void trigger(Drawable *t, Animation *a);
+private:
+	RefPtr<Drawable>	m_target;
 };
 
 #endif	/* __TSUNAMI_TRIG_DEATH_H */

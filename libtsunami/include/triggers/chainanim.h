@@ -18,8 +18,9 @@
 class ChainAnimation : public Trigger {
 public:
 	// Constructor / Destructor
-	ChainAnimation(Animation *na) {
+	ChainAnimation(Animation *na, Drawable * target = NULL) {
 		m_newanim = na;
+		m_target = target;
 	}
 	virtual ~ChainAnimation() {
 	}
@@ -27,12 +28,16 @@ public:
 	// Called when we have reached the trigger point in the
 	// given animation/drawable
 	virtual void trigger(Drawable *t, Animation *a) {
-		t->animAdd(m_newanim);
+		if (m_target)
+			m_target->animAdd(m_newanim);
+		else
+			t->animAdd(m_newanim);
 		Trigger::trigger(t, a);
 	}
 
 private:
 	RefPtr<Animation>	m_newanim;
+	RefPtr<Drawable>	m_target;
 };
 
 #endif	/* __TSUNAMI_TRIG_CHAINANIM_H */
