@@ -13,6 +13,12 @@
 
 #include <kos/vector.h>
 
+#ifdef _arch_dreamcast
+#	include <dc/fmath.h>
+#else
+#	include <math.h>
+#endif
+
 /// A C++ friendly wrapper for the point_t / vector_t struct
 class Vector {
 public:
@@ -55,6 +61,11 @@ public:
 		return Vector(x - other.x, y - other.y, z - other.z, w - other.w);
 	}
 
+	/// Unary minus
+	Vector operator-() const {
+		return Vector(-x, -y, -z);
+	}
+
 	/// Multiply by a scalar
 	Vector operator*(float s) const {
 		return Vector(x * s, y * s, z * s, w * s);
@@ -91,6 +102,42 @@ public:
 	operator vector_t() const {
 		vector_t v = { x, y, z, w };
 		return v;
+	}
+
+	/// Dot product with another vector.
+	/// NOTE: Only takes x,y,z into account.
+	float dot(const Vector & other) const {
+		return (x * other.x)
+			+ (y * other.y)
+			+ (z * other.z);
+	}
+
+	/// Cross product with another vector
+	/// NOTE: Only takes x,y,z into account.
+	Vector cross(const Vector & other) const {
+		return Vector(
+			y * other.z - z*other.y,
+			z * other.x - x*other.z,
+			x * other.y - y*other.x);
+	}
+
+	/// Get the length/magnitude of the vector
+	float length() const {
+#ifdef _arch_dreamcast
+		return fsqrt(x*x+y*y+z*z+w*w);
+#else
+		return (float)sqrt(x*x+y*y+z*z+w*w);
+#endif
+	}
+
+	/// Normalize this vector
+	Vector normalize() const {
+		float l = length();
+		return Vector(
+			x / l,
+			y / l,
+			z / l,
+			w / l);
 	}
 
 public:
