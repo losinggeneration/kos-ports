@@ -27,6 +27,9 @@
  * This file is part of the lwIP TCP/IP stack.
  */
 
+#ifndef __LWIP_SIO_H
+#define __LWIP_SIO_H
+
 /*
  * This is the interface to the platform specific serial IO module
  * It needs to be implemented by those platforms which need SLIP or PPP
@@ -61,3 +64,5 @@ u32_t sio_write(sio_fd_t, u8_t *, u32_t);
 #ifndef sio_read_abort
 void sio_read_abort(sio_fd_t);
 #endif
+
+#endif // __LWIP_SIO_H

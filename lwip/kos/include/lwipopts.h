@@ -178,6 +178,41 @@ a lot of data that needs to be copied, this should be set high. */
 #define UDP_TTL                 255
 
 
+/* ---------- PPP options ---------- */
+#define PPP_SUPPORT		1
+#define NUM_PPP			1
+#define PAP_SUPPORT		1
+#define CHAP_SUPPORT		0
+#define MSCHAP_SUPPORT		0
+#define CBCP_SUPPORT		0
+#define CCP_SUPPORT		0
+#define VJ_SUPPORT		1
+#define MD5_SUPPORT		1
+
+#define FSM_DEFTIMEOUT		6
+#define FSM_DEFMAXTERMREQS	2
+#define FSM_DEFMAXCONFREQS	10
+#define FSM_DEFMAXNAKLOOPS	5
+#define UPAP_DEFTIMEOUT		6
+#define UPAP_DEFREQTIME		30
+#define CHAP_DEFTIMEOUT		6
+#define CHAP_DEFTRANSMITS	10
+
+#define LCP_ECHOINTERVAL	0
+#define LCP_MAXECHOFAILS	3
+#define PPP_MAXIDLEFLAG		100
+
+#define PPP_MTU			1500
+#define PPP_MAXMTU		1500
+#define PPP_MINMTU		64
+#define PPP_MRU			1500
+#define PPP_MAXMRU		1500
+#define PPP_DEFMRU		296
+#define PPP_MINMRU		128
+
+#define MAXNAMELEN		256
+#define MAXSECRETLEN		256
+
 /* ---------- Statistics options ---------- */
 /*#define STATS*/
 
