@@ -21,6 +21,8 @@ public:
 	virtual ~Font();
 
 	bool loadFromFile(const char * fn);
+
+	void setFilter(int type);
 	
 	void setColor(float r, float g, float b);
 	void setAlpha(float a);

@@ -53,6 +53,10 @@ bool Font::loadFromFile(const char * fn) {
 	return true;
 }
 
+void Font::setFilter(int type) {
+	plx_txr_setfilter(m_font->txr, type);
+}
+
 void Font::setColor(float r, float g, float b) {
 	assert( m_cxt );
 
