@@ -953,7 +953,7 @@ static int select_poll(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *e
 	// Go through and look for FDs we need to service.
 	cnt = 0;
 	for (i=0; i<maxfdp1; i++) {
-		if (FD_ISSET(i, readset)) {
+		if (readset && FD_ISSET(i, readset)) {
 			// Convert to a socket #
 			s = sock_for_fd(i);
 			if (s < 0) continue;
@@ -963,18 +963,21 @@ static int select_poll(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *e
 				continue;
 
 			// If it's a listen socket, look for used connections.
-			if (fds[s].conns && fds[s].conncnt > 0) {
-				FD_SET(i, &nr);
-				cnt++;
+			if (fds[s].conns) {
+				if (fds[s].conncnt > 0) {
+					FD_SET(i, &nr);
+					cnt++;
+				}
 			} else {
 				// Any data available? Or socket dead?
 				if (fds[s].recv != 0) {
 					FD_SET(i, &nr);
+					cnt++;
 				}
 			}
 		}
 
-		if (FD_ISSET(i, writeset)) {
+		if (writeset && FD_ISSET(i, writeset)) {
 			// Convert to a socket #
 			s = sock_for_fd(i);
 			if (s < 0) continue;
@@ -992,8 +995,10 @@ static int select_poll(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *e
 	}
 
 	if (cnt > 0) {
-		memcpy(readset, &nr, sizeof(fd_set));
-		memcpy(writeset, &nw, sizeof(fd_set));
+		if (readset)
+			memcpy(readset, &nr, sizeof(fd_set));
+		if (writeset)
+			memcpy(writeset, &nw, sizeof(fd_set));
 	}
 
 	return cnt;
@@ -1031,6 +1036,14 @@ int lwip_select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptse
 				genwait_wait(&select_wait, "lwip_select", tmo, NULL);
 		}
 	} while (rv == 0);
+
+	// In case of a timeout, zero the sets.
+	if (!rv) {
+		if (readset)
+			FD_ZERO(readset);
+		if (writeset)
+			FD_ZERO(writeset);
+	}
 
 	// Restore stuff
 	irq_restore(old);
