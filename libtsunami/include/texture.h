@@ -14,7 +14,7 @@
 #include "refcnt.h"
 #include <plx/texture.h>
 
-class Texture : public RefCnt {
+class Texture : virtual public RefCnt {
 public:
 	Texture(const char *fn, bool use_alpha, bool yflip = false);
 	Texture(int w, int h, int fmt);

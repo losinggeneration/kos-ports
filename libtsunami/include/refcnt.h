@@ -34,7 +34,7 @@ public:
 	}
 
 	// Add a reference to the object
-	void ref() {
+	virtual void ref() {
 #ifndef NDEBUG
 		if (this == NULL) {
 			dbglog(DBG_WARNING, "RefCnt::ref() about to assert for caller=%08lx\n",
@@ -47,7 +47,7 @@ public:
 
 	// Remove a reference to the object; if we hit
 	// zero then delete it
-	void unref() {
+	virtual void unref() {
 #ifndef NDEBUG
 		if (this == NULL) {
 			dbglog(DBG_WARNING, "RefCnt::unref() about to assert for caller=%08lx\n",

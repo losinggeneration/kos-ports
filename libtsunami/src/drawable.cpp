@@ -13,6 +13,8 @@ CVSID("$Id: drawable.cpp,v 1.3 2003/04/24 02:57:20 bardtx Exp $");
 
 // Constructor / Destructor
 Drawable::Drawable() {
+	m_trans.zero();
+	m_rotate.zero();
 	m_scale = Vector(1.0f, 1.0f, 1.0f, 1.0f);
 	m_alpha = 1.0f;
 

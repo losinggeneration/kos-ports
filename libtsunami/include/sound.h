@@ -15,7 +15,7 @@
 
 #include <dc/sound/sfxmgr.h>
 
-class Sound : public RefCnt {
+class Sound : virtual public RefCnt {
 public:
 	Sound(const char * fn);
 	Sound();

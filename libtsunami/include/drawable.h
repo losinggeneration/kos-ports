@@ -17,7 +17,7 @@
 #include "vector.h"
 #include "color.h"
 
-class Drawable : public RefCnt {
+class Drawable : virtual public RefCnt {
 public:
 	/// Constructor / Destructor
 	Drawable();

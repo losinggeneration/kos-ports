@@ -18,7 +18,7 @@ class Trigger;
 #include "list.h"
 #include "refcnt.h"
 
-class Trigger : public RefCnt {
+class Trigger : virtual public RefCnt {
 public:
 	// Constructor / Destructor
 	Trigger();

@@ -15,7 +15,7 @@
 #include "refcnt.h"
 #include "vector.h"
 
-class Font : public RefCnt {
+class Font : virtual public RefCnt {
 public:
 	Font(const char *fn = NULL, int list = PVR_LIST_TR_POLY);
 	virtual ~Font();

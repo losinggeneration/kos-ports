@@ -1,37 +1,33 @@
 /*      
    Tsunami for KallistiOS ##version##
         
-   vector.h
+   vectordouble.h
 
-   (c)2002 Dan Potter
+   Copyright (C)2002,2003,2004 Dan Potter
 
    $Id: vector.h,v 1.2 2003/04/24 02:57:20 bardtx Exp $
 */
 
-#ifndef __TSUNAMI_VECTOR_H
-#define __TSUNAMI_VECTOR_H
+#ifndef __TSUNAMI_VECTORDOUBLE_H
+#define __TSUNAMI_VECTORDOUBLE_H
 
-#include <kos/vector.h>
 #include <assert.h>
+#include <math.h>
 
-#ifdef _arch_dreamcast
-#	include <dc/fmath.h>
-#else
-#	include <math.h>
-#endif
-
-class Matrix;
-class Vector3;
+class MatrixDouble;
+class Vector;
 
 /// A C++ friendly wrapper for the point_t / vector_t struct
-class Vector {
+class VectorDouble {
 public:
-	Vector(float ix, float iy, float iz, float iw = 0.0f)
+	VectorDouble(double ix, double iy, double iz, double iw = 0.0)
 		: x(ix), y(iy), z(iz), w(iw) { }
-	Vector() { }
+	VectorDouble() { }
+
+	VectorDouble(const Vector & o);
 
 	/// Return one of the vector elements array-style
-	float operator[](int i) const {
+	double operator[](int i) const {
 		if (i == 0)
 			return x;
 		else if (i == 1)
@@ -42,45 +38,45 @@ public:
 			return w;
 		else {
 			assert_msg(false, "Point::operator[] Invalid index");
-			return 0.0f;
+			return 0.0;
 		}
 	}
 
-	/// Copy a Vector3 into a Vector
-	Vector & operator=(const Vector3 & other);
+	/// Copy a VectorDouble into a Vector
+	Vector truncate() const;
 
 	/// Compare two vectors for equality
-	bool operator==(const Vector & other) const {
+	bool operator==(const VectorDouble & other) const {
 		return x == other.x && y == other.y && z == other.z && w == other.w;
 	}
 
 	/// Compare two vectors for inequality
-	bool operator!=(const Vector & other) const {
+	bool operator!=(const VectorDouble & other) const {
 		return !(*this == other);
 	}
 
 	/// Add two vectors
-	Vector operator+(const Vector & other) const {
-		return Vector(x + other.x, y + other.y, z + other.z, w + other.w);
+	VectorDouble operator+(const VectorDouble & other) const {
+		return VectorDouble(x + other.x, y + other.y, z + other.z, w + other.w);
 	}
 
 	/// Subtract two vectors
-	Vector operator-(const Vector & other) const {
-		return Vector(x - other.x, y - other.y, z - other.z, w - other.w);
+	VectorDouble operator-(const VectorDouble & other) const {
+		return VectorDouble(x - other.x, y - other.y, z - other.z, w - other.w);
 	}
 
 	/// Unary minus
-	Vector operator-() const {
-		return Vector(-x, -y, -z);
+	VectorDouble operator-() const {
+		return VectorDouble(-x, -y, -z);
 	}
 
 	/// Multiply by a scalar
-	Vector operator*(float s) const {
-		return Vector(x * s, y * s, z * s, w * s);
+	VectorDouble operator*(double s) const {
+		return VectorDouble(x * s, y * s, z * s, w * s);
 	}
 
 	/// Inline add two vectors
-	Vector & operator+=(const Vector & other) {
+	VectorDouble & operator+=(const VectorDouble & other) {
 		x += other.x;
 		y += other.y;
 		z += other.z;
@@ -89,7 +85,7 @@ public:
 	}
 
 	/// Inline subtract two vectors
-	Vector & operator-=(const Vector & other) {
+	VectorDouble & operator-=(const VectorDouble & other) {
 		x -= other.x;
 		y -= other.y;
 		z -= other.z;
@@ -98,18 +94,12 @@ public:
 	}
 
 	// Inline multiply by a scalar
-	Vector & operator*=(float s) {
+	VectorDouble & operator*=(double s) {
 		x *= s;
 		y *= s;
 		z *= s;
 		w *= s;
 		return *this;
-	}
-
-	/// Get a C vector_t struct out of it
-	operator vector_t() const {
-		vector_t v = { x, y, z, w };
-		return v;
 	}
 
 	/// Zero this vector out.
@@ -119,7 +109,7 @@ public:
 
 	/// Dot product with another vector.
 	/// NOTE: Only takes x,y,z into account.
-	float dot(const Vector & other) const {
+	double dot(const VectorDouble & other) const {
 		return (x * other.x)
 			+ (y * other.y)
 			+ (z * other.z);
@@ -127,34 +117,26 @@ public:
 
 	/// Cross product with another vector
 	/// NOTE: Only takes x,y,z into account.
-	Vector cross(const Vector & other) const {
-		return Vector(
+	VectorDouble cross(const VectorDouble & other) const {
+		return VectorDouble(
 			y * other.z - z*other.y,
 			z * other.x - x*other.z,
 			x * other.y - y*other.x);
 	}
 
 	/// Get the length/magnitude of the vector
-	float length() const {
-#ifdef _arch_dreamcast
-		return fsqrt(x*x+y*y+z*z+w*w);
-#else
-		return (float)sqrt(x*x+y*y+z*z+w*w);
-#endif
+	double length() const {
+		return sqrt(x*x+y*y+z*z+w*w);
 	}
 
 	/// Returns 1.0/length()
-	float rlength() const {
-#ifdef _arch_dreamcast
-		return frsqrt(x*x+y*y+z*z+w*w);
-#else
-		return 1.0f/length();
-#endif
+	double rlength() const {
+		return 1.0/length();
 	}
 
 	/// Normalize this vector in place.
-	Vector & normalizeSelf() {
-		float l = rlength();
+	VectorDouble & normalizeSelf() {
+		double l = rlength();
 		x = x * l;
 		y = y * l;
 		z = z * l;
@@ -163,9 +145,9 @@ public:
 	}
 
 	/// Normalize this vector and return a new one.
-	Vector normalize() const {
-		float l = rlength();
-		return Vector(
+	VectorDouble normalize() const {
+		double l = rlength();
+		return VectorDouble(
 			x * l,
 			y * l,
 			z * l,
@@ -173,14 +155,14 @@ public:
 	}
 
 	/// Multiply this vector with a matrix.
-	Vector operator*(const Matrix & mat) const;
+	VectorDouble operator*(const MatrixDouble & mat) const;
 
 	/// Operator *= to multiply with a matrix.
-	Vector & operator*=(const Matrix & mat);
+	VectorDouble & operator*=(const MatrixDouble & mat);
 
 public:
-	float	x, y, z, w;
+	double	x, y, z, w;
 };
 
-#endif	/* __TSUNAMI_VECTOR_H */
+#endif	/* __TSUNAMI_VECTORDOUBLE_H */
 

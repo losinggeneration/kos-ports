@@ -1,12 +1,13 @@
 /*      
    Tsunami for KallistiOS ##version##
         
-   matrix.cpp
+   matrixdouble.cpp
 
    Copyright (C)2001,2002,2003 Dan Potter
    Copyright (C)2002 Benoit Miller and Paul Boese
 */
 
+#include <tsu/matrixdouble.h>
 #include <tsu/matrix.h>
 #include <string.h>
 
@@ -15,41 +16,43 @@ CVSID("$Id: font.cpp,v 1.3 2003/04/24 02:57:20 bardtx Exp $");
 /* Several pieces of this file were pulled from libparallax, which was
    in turn pulled from KGL. */
 
-Matrix::Matrix() {
+MatrixDouble::MatrixDouble() {
 }
 
 
-Matrix::Matrix(const Matrix & other) {
+MatrixDouble::MatrixDouble(const MatrixDouble & other) {
 	memcpy(&matrix, &other.matrix, sizeof(matrix));
 }
 
-Matrix::Matrix(const matrix_t & other) {
-	memcpy(&matrix, &other, sizeof(matrix_t));
+MatrixDouble::MatrixDouble(const Matrix & other) {
+	for (int i=0; i<4; i++)
+		for (int j=0; j<4; j++)
+			matrix[i][j] = (double)other.matrix[i][j];
 }
 
-Matrix & Matrix::operator=(const Matrix & other) {
+MatrixDouble & MatrixDouble::operator=(const MatrixDouble & other) {
 	memcpy(&matrix, &other.matrix, sizeof(matrix));
 	return *this;
 }
 
 
 
-void Matrix::identity() {
+void MatrixDouble::identity() {
 	memset(&matrix, 0, sizeof(matrix));
-	matrix[0][0] = 1.0f;
-	matrix[1][1] = 1.0f;
-	matrix[2][2] = 1.0f;
-	matrix[3][3] = 1.0f;
+	matrix[0][0] = 1.0;
+	matrix[1][1] = 1.0;
+	matrix[2][2] = 1.0;
+	matrix[3][3] = 1.0;
 }
 
-#define DEG2RAD (F_PI / 180.0f)
-void Matrix::rotate(float angle, const Vector & axis) {
-	float vx = axis.x, vy = axis.y, vz = axis.z;
-	float rcos = fcos(angle * DEG2RAD);
-	float rsin = fsin(angle * DEG2RAD);
-	float invrcos = (1.0f - rcos);
-	float mag = fsqrt(vx*vx + vy*vy + vz*vz);
-	float xx, yy, zz, xy, yz, zx;
+#define DEG2RAD (F_PI / 180.0)
+void MatrixDouble::rotate(double angle, const VectorDouble & axis) {
+	double vx = axis.x, vy = axis.y, vz = axis.z;
+	double rcos = cos(angle * DEG2RAD);
+	double rsin = sin(angle * DEG2RAD);
+	double invrcos = (1.0 - rcos);
+	double mag = sqrt(vx*vx + vy*vy + vz*vz);
+	double xx, yy, zz, xy, yz, zx;
 
 	if (mag < 1.0e-6) {
 		// Rotation vector is too small to be significant
@@ -69,18 +72,18 @@ void Matrix::rotate(float angle, const Vector & axis) {
 	zx = (vz * vx * invrcos);
 
 	// Generate the rotation matrix
-	Matrix mr; mr.identity();
+	MatrixDouble mr; mr.identity();
 
 	// Hehe
-	mr.matrix[0][0] = xx + rcos * (1.0f - xx);
+	mr.matrix[0][0] = xx + rcos * (1.0 - xx);
 	mr.matrix[2][1] = yz - vx * rsin;
 	mr.matrix[1][2] = yz + vx * rsin;
 
-	mr.matrix[1][1] = yy + rcos * (1.0f - yy);
+	mr.matrix[1][1] = yy + rcos * (1.0 - yy);
 	mr.matrix[2][0] = zx + vy * rsin;
 	mr.matrix[0][2] = zx - vy * rsin;
 
-	mr.matrix[2][2] = zz + rcos * (1.0f - zz);
+	mr.matrix[2][2] = zz + rcos * (1.0 - zz);
 	mr.matrix[1][0] = xy - vz * rsin;
 	mr.matrix[0][1] = xy + vz * rsin;
 
@@ -88,8 +91,8 @@ void Matrix::rotate(float angle, const Vector & axis) {
 	*this = *this * mr;
 }
 
-void Matrix::scale(const Vector & scale) {
-	Matrix ms; ms.identity();
+void MatrixDouble::scale(const VectorDouble & scale) {
+	MatrixDouble ms; ms.identity();
 
 	ms.matrix[0][0] = scale.x;
 	ms.matrix[1][1] = scale.y;
@@ -98,8 +101,8 @@ void Matrix::scale(const Vector & scale) {
 	*this = *this * ms;
 }
 
-void Matrix::translate(const Vector & delta) {
-	Matrix mt; mt.identity();
+void MatrixDouble::translate(const VectorDouble & delta) {
+	MatrixDouble mt; mt.identity();
 
 	mt.matrix[3][0] = delta.x;
 	mt.matrix[3][1] = delta.y;
@@ -108,7 +111,7 @@ void Matrix::translate(const Vector & delta) {
 	*this = *this * mt;
 }
 
-bool Matrix::operator==(const Matrix & other) const {
+bool MatrixDouble::operator==(const MatrixDouble & other) const {
 	int x, y;
 	for (y=0; y<4; y++)
 		for (x=0; x<4; x++)
@@ -117,8 +120,8 @@ bool Matrix::operator==(const Matrix & other) const {
 	return true;
 }
 
-Matrix Matrix::operator+(const Matrix & other) const {
-	Matrix nm;
+MatrixDouble MatrixDouble::operator+(const MatrixDouble & other) const {
+	MatrixDouble nm;
 	int x, y;
 
 	for (y=0; y<4; y++)
@@ -127,8 +130,8 @@ Matrix Matrix::operator+(const Matrix & other) const {
 	return nm;
 }
 
-Matrix Matrix::operator-(const Matrix & other) const {
-	Matrix nm;
+MatrixDouble MatrixDouble::operator-(const MatrixDouble & other) const {
+	MatrixDouble nm;
 	int x, y;
 
 	for (y=0; y<4; y++)
@@ -137,7 +140,7 @@ Matrix Matrix::operator-(const Matrix & other) const {
 	return nm;
 }
 
-Matrix Matrix::operator-() const {
+MatrixDouble MatrixDouble::operator-() const {
 	Matrix nm;
 	int x, y;
 
@@ -148,8 +151,8 @@ Matrix Matrix::operator-() const {
 }
 
 // Thanks to Iris3D for this algorithm (I'm too lazy to look it up ;)
-Matrix Matrix::operator*(const Matrix & other) const {
-	Matrix nm;
+MatrixDouble MatrixDouble::operator*(const MatrixDouble & other) const {
+	MatrixDouble nm;
 
 	for (int i=0; i<4; i++) {
 		for (int j=0; j<4; j++) {
@@ -163,17 +166,17 @@ Matrix Matrix::operator*(const Matrix & other) const {
 }
 
 // Pulled from Parallax
-void Matrix::lookAt(const Vector & eye, const Vector & center, const Vector & upi) {
-	Vector forward = (center - eye).normalize();
+void MatrixDouble::lookAt(const VectorDouble & eye, const VectorDouble & center, const VectorDouble & upi) {
+	VectorDouble forward = (center - eye).normalize();
 
 	// Side = forward x up
-	Vector side = (forward.cross(upi)).normalize();
+	VectorDouble side = (forward.cross(upi)).normalize();
 
 	// Recompute up as: up = side x forward
-	Vector up = side.cross(forward);
+	VectorDouble up = side.cross(forward);
 
 	// Put the initial transformation in a tmp matrix
-	Matrix mult; mult.identity();
+	MatrixDouble mult; mult.identity();
 
 	mult.matrix[0][0] = side.x;
 	mult.matrix[1][0] = side.y;
@@ -192,4 +195,14 @@ void Matrix::lookAt(const Vector & eye, const Vector & center, const Vector & up
 
 	// And finish recomputing
 	*this = (*this) * mult;
+}
+
+Matrix MatrixDouble::truncate() const {
+	Matrix nm;
+
+	for (int i=0; i<4; i++)
+		for (int j=0; j<4; j++)
+			nm.matrix[i][j] = (float)matrix[i][j];
+
+	return nm;
 }

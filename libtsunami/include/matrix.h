@@ -41,6 +41,9 @@ public:
 	/// Do a translation operation on the matrix
 	void translate(const Vector & delta);
 
+	/// Do a look-at operation on the matrix (i.e. camera)
+	void lookAt(const Vector & pos, const Vector & lookAt, const Vector & up);
+
 	/// Compare two matrices for equality
 	bool operator==(const Matrix & other) const;
 
