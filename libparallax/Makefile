@@ -9,4 +9,4 @@ TARGET = libparallax.a
 OBJS := $(patsubst %.c,%.o,$(wildcard src/*.c))
 
 # Grab the shared Makefile pieces
-include ../Makefile.prefab
+include $(KOS_BASE)/addons/Makefile.prefab

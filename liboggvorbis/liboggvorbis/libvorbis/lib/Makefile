@@ -5,8 +5,7 @@
 # Based on KOS Makefiles by Dan Potter
 
 OBJS = mdct.o smallft.o block.o envelope.o window.o lsp.o lpc.o analysis.o synthesis.o psy.o info.o floor1.o floor0.o res0.o mapping0.o registry.o codebook.o sharedbook.o lookup.o bitrate.o vorbisfile.o
-KOS_INCS += -I. -I../include -DLITTLE_ENDIAN=1
-CFLAGS += -O2
+KOS_CFLAGS += -I. -I../include -DLITTLE_ENDIAN=1
 
 all: libvorbis.a
 libvorbis.a: $(OBJS) 

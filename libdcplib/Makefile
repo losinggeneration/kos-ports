@@ -11,6 +11,6 @@ OBJS =  ulError.o sg.o fnt.o fntTXF.o
 OBJS += sgd.o sgIsect.o
 SUBDIRS =
 
-include ../Makefile.prefab
+include $(KOS_BASE)/addons/Makefile.prefab
 
 

@@ -12,6 +12,6 @@ all: subdirs copylibs
 
 # Copy libs from target oggvorbis and oggvorbisplay to root
 copylibs:
-	cp ./liboggvorbisplay/lib/liboggvorbisplay.a $(KOS_ADDONS_BASE)/lib/$(KOS_ARCH)/
+	cp ./liboggvorbisplay/lib/liboggvorbisplay.a $(KOS_BASE)/addons/lib/$(KOS_ARCH)/
 
-include ../Makefile.prefab
+include $(KOS_BASE)/addons/Makefile.prefab

@@ -1,3 +1,3 @@
 /* Wrapper for Parallax context.h */
 
-#include "../../addons/libparallax/include/context.h"
+#include "../../libparallax/include/context.h"

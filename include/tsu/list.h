@@ -1,3 +1,3 @@
 /* Wrapper for Tsunami list.h */
 
-#include "../../addons/libtsunami/include/list.h"
+#include "../../libtsunami/include/list.h"

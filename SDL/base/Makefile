@@ -13,12 +13,12 @@
 # This controls GL support, uncomment for GL support using BERO's libgl (not KGL)
 #GL=1
 
-KOS_LOCAL_CFLAGS = -I$(KOS_ADDONS_BASE)/include/SDL -Isrc -Isrc/audio -Isrc/cdrom -Isrc/endian
-KOS_LOCAL_CFLAGS += -Isrc/events -Isrc/joystick -Isrc/thread/dc -Isrc/thread -Isrc/timer
-KOS_LOCAL_CFLAGS += -Isrc/video -DNO_SIGNAL_H -DENABLE_DC
+KOS_CFLAGS += -I../../include/SDL -Isrc -Isrc/audio -Isrc/cdrom -Isrc/endian
+KOS_CFLAGS += -Isrc/events -Isrc/joystick -Isrc/thread/dc -Isrc/thread -Isrc/timer
+KOS_CFLAGS += -Isrc/video -DNO_SIGNAL_H -DENABLE_DC
 
 ifdef GL
-KOS_LOCAL_CFLAGS += -DHAVE_OPENGL
+KOS_CFLAGS += -DHAVE_OPENGL
 endif
 
 OBJS = \
@@ -73,11 +73,8 @@ OBJS = \
 	src/video/SDL_yuv.o \
 	src/video/SDL_yuv_sw.o
 
+TARGET = libSDL.a
 
-myall: $(OBJS)
-	rm -f $(KOS_ADDONS_BASE)/lib/libSDL.a
-	$(KOS_AR) rcs $(KOS_ADDONS_BASE)/lib/libSDL.a $(OBJS)
-
-include $(KOS_BASE)/Makefile.prefab
+include $(KOS_BASE)/addons/Makefile.prefab
 
 

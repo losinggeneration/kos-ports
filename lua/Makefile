@@ -14,7 +14,7 @@ all:
 #	cd src/luac; $(MAKE) $@
 	cd src/lib; $(MAKE) $@
 #	cd src/lua; $(MAKE) $@
-	-cp lib/*.a ../lib/$(KOS_ARCH)/
+	cp lib/*.a $(KOS_BASE)/addons/lib/$(KOS_ARCH)/
 
 clean co klean:
 	cd include; $(MAKE) $@
@@ -22,8 +22,8 @@ clean co klean:
 #	cd src/luac; $(MAKE) $@
 	cd src/lib; $(MAKE) $@
 #	cd src/lua; $(MAKE) $@
-	rm -f ../lib/$(KOS_ARCH)/liblua.a
-	rm -f ../lib/$(KOS_ARCH)/liblualib.a
+	rm -f $(KOS_BASE)/addons/lib/$(KOS_ARCH)/liblua.a
+	rm -f $(KOS_BASE)/addons/lib/$(KOS_ARCH)/liblualib.a
 
 # remove debug information from binaries
 strip:

@@ -8,4 +8,4 @@
 TARGET = libtga.a
 OBJS = tga.o
 
-include ../Makefile.prefab
+include $(KOS_BASE)/addons/Makefile.prefab

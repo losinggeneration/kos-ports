@@ -8,4 +8,4 @@
 TARGET = libkosh.a
 OBJS = builtin.o chdir.o kosh.o input.o
 
-include ../Makefile.prefab
+include $(KOS_BASE)/addons/Makefile.prefab

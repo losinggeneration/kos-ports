@@ -8,8 +8,11 @@
 OBJS = main.o sndmp3.o
 
 BUILD_TARGET = addons/libmp3
-KOS_LOCAL_CFLAGS = -I../xingmp3 -I$(KOS_BASE)/include/mp3
-# KOS_LOCAL_CFLAGS = -I../mpglib -I$(KOS_BASE)/include/mp3
+KOS_CFLAGS += -I../xingmp3 
+# KOS_LOCAL_CFLAGS = -I../mpglib
+
+all:
+	cp $(OBJS) ../build/
 
 include $(KOS_BASE)/Makefile.prefab
 

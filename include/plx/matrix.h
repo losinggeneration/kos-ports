@@ -1,3 +1,3 @@
 /* Wrapper for Parallax matrix.h */
 
-#include "../../addons/libparallax/include/matrix.h"
+#include "../../libparallax/include/matrix.h"

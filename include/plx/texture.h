@@ -1,3 +1,3 @@
 /* Wrapper for Parallax texture.h */
 
-#include "../../addons/libparallax/include/texture.h"
+#include "../../libparallax/include/texture.h"

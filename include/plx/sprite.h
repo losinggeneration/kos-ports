@@ -1,3 +1,3 @@
 /* Wrapper for Parallax sprite.h */
 
-#include "../../addons/libparallax/include/sprite.h"
+#include "../../libparallax/include/sprite.h"

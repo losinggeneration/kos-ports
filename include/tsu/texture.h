@@ -1,3 +1,3 @@
 /* Wrapper for Tsunami texture.h */
 
-#include "../../addons/libtsunami/include/texture.h"
+#include "../../libtsunami/include/texture.h"

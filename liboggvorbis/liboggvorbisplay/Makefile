@@ -9,8 +9,7 @@ SUBDIRS =
 POSTDIRS = test
 
 BUILD_TARGET = build 
-KOS_LOCAL_CFLAGS = -I. -I../liboggvorbis/libvorbis/include -I../liboggvorbis/libogg/include -I$(KOS_BASE)/include/mp3
-# KOS_LOCAL_CFLAGS = -I../mpglib -I$(KOS_BASE)/include/mp3
+KOS_CFLAGS += -I. -I../liboggvorbis/libvorbis/include -I../liboggvorbis/libogg/include
 
 all: subdirs liboggvorbisplay.a 
 
