@@ -15,7 +15,7 @@ void input_oneloop() {
 
 	/* Wait for a line of input */
 	conio_printf("$ ");
-	if (conio_input_getline(1, buff, 255) < 0) {
+	if (conio_input_getline(-1, buff, 255) < 0) {
 		kosh_exit = 1;
 		return;
 	}
