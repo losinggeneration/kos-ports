@@ -1,7 +1,7 @@
 /* KallistiOS ##version##
 
    sndmp3.c
-   (c)2000 Dan Potter
+   Copyright (C)2000,2004 Dan Potter
 
    An MP3 player using sndstream and XingMP3
 */
@@ -14,6 +14,7 @@
  */
 
 #include <kos.h>
+#include <assert.h>
 #include <mp3/sndserver.h>
 #include <mp3/sndmp3.h>
 
@@ -46,6 +47,8 @@ static int bs_count;
 #define PCM_SIZE (PCM_WATER+16384)	/* Total buffer size */
 static char *pcm_buffer = NULL, *pcm_ptr;
 static int pcm_count;
+
+static snd_stream_hnd_t stream_hnd = -1;
 
 /* MPEG file */
 static uint32 mp3_fd;
@@ -102,7 +105,7 @@ static int pcm_empty(int size) {
 
 /* This callback is called each time the sndstream driver needs
    some more data. It will tell us how much it needs in bytes. */
-static void* xing_callback(int size, int * actual) {
+static void* xing_callback(snd_stream_hnd_t hnd, int size, int * actual) {
 	static	int frames = 0;
 	IN_OUT	x;
 
@@ -309,6 +312,9 @@ static volatile int sndmp3_loop;
    stop and this thread will return when you call sndmp3_shutdown(). */
 static void sndmp3_thread() {
 	int sj;
+
+	stream_hnd = snd_stream_alloc(NULL, SND_STREAM_BUFFER_MAX);
+	assert( stream_hnd != -1 );
 	
 	/* Main command loop */
 	while(sndmp3_status != STATUS_QUIT) {
@@ -323,21 +329,21 @@ static void sndmp3_thread() {
 				break;
 			case STATUS_STARTING:
 				/* Initialize streaming driver */
-				if (snd_stream_init(xing_callback) < 0) {
+				if (snd_stream_reinit(stream_hnd, xing_callback) < 0) {
 					sndmp3_status = STATUS_READY;
 				} else {
-					snd_stream_start(decinfo.samprate, decinfo.channels - 1);
+					snd_stream_start(stream_hnd, decinfo.samprate, decinfo.channels - 1);
 					sndmp3_status = STATUS_PLAYING;
 				}
 				break;
 			case STATUS_REINIT:
 				/* Re-initialize streaming driver */
-				snd_stream_init(NULL);
+				snd_stream_reinit(stream_hnd, NULL);
 				sndmp3_status = STATUS_READY;
 				break;
 			case STATUS_PLAYING: {
 				sj = jiffies;
-				if (snd_stream_poll() < 0) {
+				if (snd_stream_poll(stream_hnd) < 0) {
 					if (sndmp3_loop) {
 						printf("sndserver: restarting '%s'\r\n", mp3_last_fn);
 						if (xing_init(mp3_last_fn) < 0) {
@@ -346,18 +352,17 @@ static void sndmp3_thread() {
 						}
 					} else {
 						printf("sndserver: not restarting\r\n");
-						snd_stream_stop();
+						snd_stream_stop(stream_hnd);
 						sndmp3_status = STATUS_READY;
 						mp3_last_fn[0] = 0;
 					}
 					// stream_start();
-				}
-				if (sj == jiffies)
-					thd_pass();
+				} else
+					thd_sleep(50);
 				break;
 			}
 			case STATUS_STOPPING:
-				snd_stream_stop();
+				snd_stream_stop(stream_hnd);
 				sndmp3_status = STATUS_READY;
 				break;
 		}
@@ -365,7 +370,8 @@ static void sndmp3_thread() {
 	
 	/* Done: clean up */
 	xing_shutdown();
-	snd_stream_shutdown();
+	snd_stream_stop(stream_hnd);
+	snd_stream_destroy(stream_hnd);
 
 	sndmp3_status = STATUS_ZOMBIE;
 }
@@ -421,7 +427,7 @@ void sndmp3_shutdown() {
 
 /* Adjust the MP3 volume */
 void sndmp3_volume(int vol) {
-	snd_stream_volume(vol);
+	snd_stream_volume(stream_hnd, vol);
 }
 
 /* Setup a service */
@@ -455,9 +461,10 @@ void sndmp3_mainloop() {
 	/* sndmp3_svc_init(); */
 
 	/* Initialize sound program for apps that don't need music */
-	snd_stream_init(NULL);
+	// snd_stream_init(NULL);
 
 	/* Go into the main thread wait loop */
+	sndmp3_status=STATUS_INIT;
 	sndmp3_thread();
 
 	/* Free the semaphore */

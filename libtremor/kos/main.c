@@ -36,6 +36,7 @@ void sndoggvorbis_shutdown() {
 
 	sndoggvorbis_thd_quit();
 	thd_wait(thd);
+	thd = NULL;
 
 	printf("sndserver: exited successfully\n");
 }

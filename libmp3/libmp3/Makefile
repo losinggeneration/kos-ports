@@ -11,7 +11,7 @@ BUILD_TARGET = addons/libmp3
 KOS_CFLAGS += -I../xingmp3 
 # KOS_LOCAL_CFLAGS = -I../mpglib
 
-all:
+all: $(OBJS)
 	cp $(OBJS) ../build/
 
 include $(KOS_BASE)/Makefile.prefab

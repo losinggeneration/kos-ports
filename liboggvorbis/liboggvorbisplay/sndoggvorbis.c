@@ -2,8 +2,8 @@
  * for KOS ##version##
  *
  * sndoggvorbis.c
- * Copyright (c)2001,2002 Thorsten Titze
- * Copyright (c)2002 Dan Potter
+ * Copyright (C)2001,2002 Thorsten Titze
+ * Copyright (C)2002,2003,2004 Dan Potter
  *
  * An Ogg/Vorbis player library using sndstream and functions provided by
  * ivorbisfile (Tremor).
@@ -29,6 +29,8 @@ static int32 pcm_count=0;			/* bytes in buffer */
 static int32 last_read=0;			/* number of bytes the sndstream driver grabbed at last callback */
 
 static int tempcounter =0;
+
+static snd_stream_hnd_t stream_hnd = SND_STREAM_INVALID;
 
 /* liboggvorbis Related Variables */
 static OggVorbis_File	vf;
@@ -199,7 +201,7 @@ void sndoggvorbis_wait_start()
  * this procedure is called by the streaming server when it needs more PCM data
  * for internal buffering
  */
-static void *callback(int size, int * size_out)
+static void *callback(snd_stream_hnd_t hnd, int size, int * size_out)
 {
 #ifdef TIMING_TESTS
 	int decoded_bytes = 0;
@@ -290,13 +292,13 @@ static void *callback(int size, int * size_out)
  *
  * this function is called by sndoggvorbis_mainloop and handles all the threads
  * status handling and playing functionality.
- *
- * Exceptions:
- * - Looping of Files not yet supported
  */
 void sndoggvorbis_thread() 
 {	
 	int stat;
+
+	stream_hnd = snd_stream_alloc(NULL, SND_STREAM_BUFFER_MAX);
+	assert( stream_hnd != SND_STREAM_INVALID );
 	
 	while(sndoggvorbis_status != STATUS_QUIT)
 	{
@@ -315,11 +317,11 @@ void sndoggvorbis_thread()
 			case STATUS_QUEUEING: {
 				vorbis_info * vi = ov_info(&vf, -1);
 
-				snd_stream_init(callback);
-				snd_stream_queue_enable();
+				snd_stream_reinit(stream_hnd, callback);
+				snd_stream_queue_enable(stream_hnd);
 				printf("oggthread: stream_init called\n");
-				snd_stream_start(vi->rate, vi->channels - 1);
-				snd_stream_volume(sndoggvorbis_vol);
+				snd_stream_start(stream_hnd, vi->rate, vi->channels - 1);
+				snd_stream_volume(stream_hnd, sndoggvorbis_vol);
 				printf("oggthread: stream_start called\n");
 				if (sndoggvorbis_status != STATUS_STOPPING)
 					sndoggvorbis_status = STATUS_QUEUED;
@@ -336,14 +338,14 @@ void sndoggvorbis_thread()
 				vorbis_info * vi = ov_info(&vf, -1);
 				
 				if (sndoggvorbis_queue_enabled) {
-					snd_stream_queue_go();
+					snd_stream_queue_go(stream_hnd);
 				} else {
-					snd_stream_init(callback);
+					snd_stream_reinit(stream_hnd, callback);
 					printf("oggthread: stream_init called\n");
-					snd_stream_start(vi->rate, vi->channels - 1);
+					snd_stream_start(stream_hnd, vi->rate, vi->channels - 1);
 					printf("oggthread: stream_start called\n");
 				}
-				snd_stream_volume(sndoggvorbis_vol);
+				snd_stream_volume(stream_hnd, sndoggvorbis_vol);
 				sndoggvorbis_status=STATUS_PLAYING;
 				break;
 			}
@@ -366,11 +368,11 @@ void sndoggvorbis_thread()
 				tempcounter++; */
 
 				/* Stream Polling and end-of-stream detection */
-				if ( (stat = snd_stream_poll()) < 0)
+				if ( (stat = snd_stream_poll(stream_hnd)) < 0)
 				{
 					printf("oggthread: stream ended (status %d)\n", stat);
 					printf("oggthread: not restarting\n");
-					snd_stream_stop();
+					snd_stream_stop(stream_hnd);
 
 					/* Reset our PCM buffer */
 					pcm_count = 0;
@@ -390,7 +392,7 @@ void sndoggvorbis_thread()
 				break;
 
 			case STATUS_STOPPING:
-				snd_stream_stop();
+				snd_stream_stop(stream_hnd);
 				ov_clear(&vf);
 				/* Reset our PCM buffer */
 				pcm_count = 0;
@@ -404,8 +406,8 @@ void sndoggvorbis_thread()
 		}
 	}
 
-	snd_stream_stop();
-	snd_stream_shutdown();
+	snd_stream_stop(stream_hnd);
+	snd_stream_destroy(stream_hnd);
 	sndoggvorbis_status=STATUS_ZOMBIE;
 
 	printf("oggthread: thread released\n");
@@ -546,7 +548,7 @@ void sndoggvorbis_thd_quit()
 	sem_signal(sndoggvorbis_halt_sem);
         while (sndoggvorbis_status != STATUS_ZOMBIE)
                 thd_pass();
-        snd_stream_stop();
+        // snd_stream_stop();
 }
 
 /* sndoggvorbis_volume(...)
@@ -556,7 +558,7 @@ void sndoggvorbis_thd_quit()
 void sndoggvorbis_volume(int vol)
 {
 	sndoggvorbis_vol = vol;
-	snd_stream_volume(vol);
+	snd_stream_volume(stream_hnd, vol);
 }
 	
 /* sndoggvorbis_mainloop()
@@ -570,8 +572,6 @@ void sndoggvorbis_mainloop()
 	 */
 	sndoggvorbis_halt_sem = sem_create(0);
 	
-	snd_stream_init(NULL);
-
 	sndoggvorbis_status = STATUS_INIT;
 	sndoggvorbis_queue_enabled = 0;
 

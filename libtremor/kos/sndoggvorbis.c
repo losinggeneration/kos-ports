@@ -2,8 +2,8 @@
  * for KOS ##version##
  *
  * sndoggvorbis.c
- * (c)2001/2002 Thorsten Titze
- * (c)2002 Dan Potter
+ * Copyright (C)2001,2002 Thorsten Titze
+ * Copyright (C)2002,2003,2004 Dan Potter
  *
  * An Ogg/Vorbis player library using sndstream and functions provided by
  * ivorbisfile (Tremor).
@@ -15,7 +15,7 @@
 #include "ivorbisfile.h"
 #include "misc.h"
 
-CVSID("$Id: sndoggvorbis.c,v 1.5 2003/02/17 06:08:04 bardtx Exp $");
+CVSID("$Id: sndoggvorbis.c,v 1.13 2003/05/21 03:47:36 bardtx Exp $");
 
 /* Enable this #define to do timing testing */
 /* #define TIMING_TESTS */
@@ -29,6 +29,8 @@ static int32 pcm_count=0;			/* bytes in buffer */
 static int32 last_read=0;			/* number of bytes the sndstream driver grabbed at last callback */
 
 static int tempcounter =0;
+
+static snd_stream_hnd_t stream_hnd = SND_STREAM_INVALID;
 
 /* liboggvorbis Related Variables */
 static OggVorbis_File	vf;
@@ -63,6 +65,7 @@ static volatile int sndoggvorbis_bitrateint;	/* bitrateinterval in calls */
 static semaphore_t *sndoggvorbis_halt_sem;	/* semaphore to pause thread */
 static char sndoggvorbis_lastfilename[256];	/* filename of last played file */
 static int current_section;
+static int sndoggvorbis_vol = 240;
 
 /* Enable/disable queued waiting */
 void sndoggvorbis_queue_enable() {
@@ -198,7 +201,7 @@ void sndoggvorbis_wait_start()
  * this procedure is called by the streaming server when it needs more PCM data
  * for internal buffering
  */
-static void *callback(int size, int * size_out)
+static void *callback(snd_stream_hnd_t hnd, int size, int * size_out)
 {
 #ifdef TIMING_TESTS
 	int decoded_bytes = 0;
@@ -289,13 +292,13 @@ static void *callback(int size, int * size_out)
  *
  * this function is called by sndoggvorbis_mainloop and handles all the threads
  * status handling and playing functionality.
- *
- * Exceptions:
- * - Looping of Files not yet supported
  */
 void sndoggvorbis_thread() 
 {	
 	int stat;
+
+	stream_hnd = snd_stream_alloc(NULL, SND_STREAM_BUFFER_MAX);
+	assert( stream_hnd != SND_STREAM_INVALID );
 	
 	while(sndoggvorbis_status != STATUS_QUIT)
 	{
@@ -314,10 +317,11 @@ void sndoggvorbis_thread()
 			case STATUS_QUEUEING: {
 				vorbis_info * vi = ov_info(&vf, -1);
 
-				snd_stream_init(callback);
-				snd_stream_queue_enable();
+				snd_stream_reinit(stream_hnd, callback);
+				snd_stream_queue_enable(stream_hnd);
 				printf("oggthread: stream_init called\n");
-				snd_stream_start(vi->rate, vi->channels - 1);
+				snd_stream_start(stream_hnd, vi->rate, vi->channels - 1);
+				snd_stream_volume(stream_hnd, sndoggvorbis_vol);
 				printf("oggthread: stream_start called\n");
 				if (sndoggvorbis_status != STATUS_STOPPING)
 					sndoggvorbis_status = STATUS_QUEUED;
@@ -333,14 +337,15 @@ void sndoggvorbis_thread()
 			case STATUS_STARTING: {
 				vorbis_info * vi = ov_info(&vf, -1);
 				
-				if (sndoggvorbis_queue_enabled)
-					snd_stream_queue_go();
-				else {
-					snd_stream_init(callback);
+				if (sndoggvorbis_queue_enabled) {
+					snd_stream_queue_go(stream_hnd);
+				} else {
+					snd_stream_reinit(stream_hnd, callback);
 					printf("oggthread: stream_init called\n");
-					snd_stream_start(vi->rate, vi->channels - 1);
+					snd_stream_start(stream_hnd, vi->rate, vi->channels - 1);
 					printf("oggthread: stream_start called\n");
 				}
+				snd_stream_volume(stream_hnd, sndoggvorbis_vol);
 				sndoggvorbis_status=STATUS_PLAYING;
 				break;
 			}
@@ -363,11 +368,11 @@ void sndoggvorbis_thread()
 				tempcounter++; */
 
 				/* Stream Polling and end-of-stream detection */
-				if ( (stat = snd_stream_poll()) < 0)
+				if ( (stat = snd_stream_poll(stream_hnd)) < 0)
 				{
 					printf("oggthread: stream ended (status %d)\n", stat);
 					printf("oggthread: not restarting\n");
-					snd_stream_stop();
+					snd_stream_stop(stream_hnd);
 
 					/* Reset our PCM buffer */
 					pcm_count = 0;
@@ -387,7 +392,7 @@ void sndoggvorbis_thread()
 				break;
 
 			case STATUS_STOPPING:
-				snd_stream_stop();
+				snd_stream_stop(stream_hnd);
 				ov_clear(&vf);
 				/* Reset our PCM buffer */
 				pcm_count = 0;
@@ -401,8 +406,8 @@ void sndoggvorbis_thread()
 		}
 	}
 
-	snd_stream_stop();
-	snd_stream_shutdown();
+	snd_stream_stop(stream_hnd);
+	snd_stream_destroy(stream_hnd);
 	sndoggvorbis_status=STATUS_ZOMBIE;
 
 	printf("oggthread: thread released\n");
@@ -453,14 +458,11 @@ static char *vc_get_comment(vorbis_comment * vc, const char *commentfield) {
 	return NULL;
 }
 
-/* sndoggvorbis_start(...)
- *
- * function to start playback of a Ogg/Vorbis file. Expects a filename to
- * a file in the KOS filesystem.
- */
-int sndoggvorbis_start(const char *filename,int loop)
+
+/* Same as sndoggvorbis_start, but takes an already-opened file. Once a file is
+   passed into this function, we assume that _we_ own it. */
+int sndoggvorbis_start_fd(FILE * fd, int loop)
 {
-	FILE *f;
 	vorbis_comment *vc;
 	
 	/* If we are already playing or just loading a new file
@@ -468,6 +470,7 @@ int sndoggvorbis_start(const char *filename,int loop)
 	 */
 	if (sndoggvorbis_status != STATUS_READY)
 	{
+		fclose(fd);
 		return -1;
 	}
 	
@@ -477,18 +480,14 @@ int sndoggvorbis_start(const char *filename,int loop)
 
 	printf("oggthread: initializing and parsing ogg\n");
 
-	f = fopen(filename, "rb");
-	if (!f) {
-		dbglog(DBG_ERROR, "sndoggvorbis: couldn't open source file!\n");
-		return -1;
-	}
-	if(ov_open(f, &vf, NULL, 0) < 0) {
+	if(ov_open(fd, &vf, NULL, 0) < 0) {
 		printf("sndoggvorbis: input does not appear to be an Ogg bitstream\n");
+		fclose(fd);
 		return -1;
 	}
 	
 	sndoggvorbis_loop = loop;
-	strcpy(sndoggvorbis_lastfilename, filename);
+	strcpy(sndoggvorbis_lastfilename, "<stream>");
 
 	if (sndoggvorbis_queue_enabled)
 		sndoggvorbis_status = STATUS_QUEUEING;
@@ -513,10 +512,28 @@ int sndoggvorbis_start(const char *filename,int loop)
 		sndoggvorbis_info.description = vc_get_comment(vc, "description");
 		sndoggvorbis_info.genre = vc_get_comment(vc, "genre");
 		sndoggvorbis_info.date = vc_get_comment(vc, "date");
-		sndoggvorbis_info.filename = filename;
+		sndoggvorbis_info.filename = sndoggvorbis_lastfilename;
 	}
 
 	return 0;
+}
+
+/* sndoggvorbis_start(...)
+ *
+ * function to start playback of a Ogg/Vorbis file. Expects a filename to
+ * a file in the KOS filesystem.
+ */
+int sndoggvorbis_start(const char *filename,int loop)
+{
+	FILE *f;
+
+	f = fopen(filename, "rb");
+	if (!f) {
+		dbglog(DBG_ERROR, "sndoggvorbis: couldn't open source file!\n");
+		return -1;
+	}
+
+	return sndoggvorbis_start_fd(f, loop);
 }
 
 /* sndoggvorbis_shutdown()
@@ -531,7 +548,7 @@ void sndoggvorbis_thd_quit()
 	sem_signal(sndoggvorbis_halt_sem);
         while (sndoggvorbis_status != STATUS_ZOMBIE)
                 thd_pass();
-        snd_stream_stop();
+        // snd_stream_stop();
 }
 
 /* sndoggvorbis_volume(...)
@@ -540,7 +557,8 @@ void sndoggvorbis_thd_quit()
  */
 void sndoggvorbis_volume(int vol)
 {
-	snd_stream_volume(vol);
+	sndoggvorbis_vol = vol;
+	snd_stream_volume(stream_hnd, vol);
 }
 	
 /* sndoggvorbis_mainloop()
@@ -554,8 +572,6 @@ void sndoggvorbis_mainloop()
 	 */
 	sndoggvorbis_halt_sem = sem_create(0);
 	
-	snd_stream_init(NULL);
-
 	sndoggvorbis_status = STATUS_INIT;
 	sndoggvorbis_queue_enabled = 0;
 
