@@ -12,6 +12,7 @@
 #define __TSUNAMI_MATRIX_H
 
 #include <kos/vector.h>
+#include "vector.h"
 
 #ifdef _arch_dreamcast
 #	include <dc/fmath.h>
@@ -22,37 +23,26 @@
 /// A C++ friendly wrapper for the matrix_t struct
 class Matrix {
 public:
-	Matrix(bool initialize = true) {
-		if (initialize)
-			identity();
-	}
+	Matrix();
+	Matrix(const Matrix & other);
+	Matrix(const matrix_t & other);
 
-	Matrix(const Matrix & other) {
-		memcpy(&matrix, &other.matrix, sizeof(matrix));
-	}
-
-	Matrix & operator=(const Matrix & other) {
-		memcpy(&matrix, &other.matrix, sizeof(matrix));
-	}
+	Matrix & operator=(const Matrix & other);
 
 	/// Set us to the identity matrix
-	void identity() {
-		memset(&matrix, 0, sizeof(matrix));
-		matrix[0][0] = 1.0f;
-		matrix[1][1] = 1.0f;
-		matrix[2][2] = 1.0f;
-		matrix[3][3] = 1.0f;
-	}
+	void identity();
+
+	/// Do an arbitrary rotation on the matrix
+	void rotate(float angle, const Vector & axis);
+
+	/// Do a scale operation on the matrix
+	void scale(const Vector & scale);
+
+	/// Do a translation operation on the matrix
+	void translate(const Vector & delta);
 
 	/// Compare two matrices for equality
-	bool operator==(const Matrix & other) const {
-		int x, y;
-		for (y=0; y<4; y++)
-			for (x=0; x<4; x++)
-				if (matrix[x][y] != other.matrix[x][y])
-					return false;
-		return true;
-	}
+	bool operator==(const Matrix & other) const;
 
 	/// Compare two matrices for inequality
 	bool operator!=(const Matrix & other) const {
@@ -60,37 +50,13 @@ public:
 	}
 
 	/// Add two matrices
-	Matrix operator+(const Matrix & other) const {
-		Matrix nm(false);
-		int x, y;
-
-		for (y=0; y<4; y++)
-			for (x=0; x<4; x++)
-				nm.matrix[x][y] = matrix[x][y] + other.matrix[x][y];
-		return nm;
-	}
+	Matrix operator+(const Matrix & other) const;
 
 	/// Subtract two matrices
-	Matrix operator-(const Matrix & other) const {
-		Matrix nm(false);
-		int x, y;
-
-		for (y=0; y<4; y++)
-			for (x=0; x<4; x++)
-				nm.matrix[x][y] = matrix[x][y] + other.matrix[x][y];
-		return nm;
-	}
+	Matrix operator-(const Matrix & other) const;
 
 	/// Unary minus
-	Matrix operator-() const {
-		Matrix nm(false);
-		int x, y;
-
-		for (y=0; y<4; y++)
-			for (x=0; x<4; x++)
-				nm.matrix[x][y] = -matrix[x][y];
-		return nm;
-	}
+	Matrix operator-() const;
 
 	/// Inline add two matrices
 	Matrix & operator+=(const Matrix & other) {
@@ -103,6 +69,9 @@ public:
 		*this = *this - other;
 		return *this;
 	}
+
+	/// Matrix multiply (aka mat_apply)
+	Matrix operator*(const Matrix & other) const;
 
 public:
 	matrix_t	matrix;
