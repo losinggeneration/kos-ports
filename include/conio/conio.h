@@ -64,6 +64,7 @@ void conio_set_theme(int theme);
 #define CONIO_TTY_PVR		1
 #define CONIO_TTY_SERIAL	2
 #define CONIO_TTY_STDIO		3
+#define CONIO_TTY_DBGIO		4
 #define CONIO_INPUT_NONE	0
 #define CONIO_INPUT_LINE	1
 #define CONIO_INPUT_CHAR	2

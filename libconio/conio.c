@@ -51,6 +51,9 @@ void conio_scroll() {
 		case CONIO_TTY_STDIO:
 			fs_write(conio_serial_fd, (void *)"\x1b[M", 3);
 			break;
+		case CONIO_TTY_DBGIO:
+			dbgio_write_buffer((const uint8 *)"\x1b[M", 3);
+			break;
 	}
 }
 
@@ -76,6 +79,11 @@ void conio_deadvance_cursor() {
 		case CONIO_TTY_STDIO:
 			fs_write(conio_serial_fd, (void *)"\x8\x20\x8", 3);
 			break;
+		case CONIO_TTY_DBGIO:
+			dbgio_write(8);
+			dbgio_write(32);
+			dbgio_write(8);
+			break;
 	}
 }
 
@@ -97,6 +105,9 @@ void conio_advance_cursor() {
 		case CONIO_TTY_STDIO:
 			fs_write(conio_serial_fd, (void *)"\x1b[1C", 4);
 			break;
+		case CONIO_TTY_DBGIO:
+			dbgio_write_buffer((const uint8 *)"\x1b[1C", 4);
+			break;
 	}
 }
 
@@ -117,6 +128,12 @@ void conio_gotoxy(int x, int y) {
 			char tmp[256];
 			sprintf(tmp, "\x1b[%d;%df", x, y);
 			fs_write(conio_serial_fd, tmp, strlen(tmp));
+			break;
+		}
+		case CONIO_TTY_DBGIO: {
+			char tmp[256];
+			sprintf(tmp, "\x1b[%d;%df", x, y);
+			dbgio_write_buffer(tmp, strlen(tmp));
 			break;
 		}
 	}
@@ -151,6 +168,16 @@ int conio_getch() {
 				return conio_getch();
 			break;
 		}
+		case CONIO_TTY_DBGIO: {
+			while ((key = dbgio_read()) == -1) {
+				thd_sleep(1000);
+			}
+
+			if (key == 3)
+				arch_exit();
+	
+			break;
+		}
 	}
 
 	return key;
@@ -183,6 +210,14 @@ int conio_check_getch() {
 			if (key == '\n')
 				key = -1;
 			break;
+		case CONIO_TTY_DBGIO: {
+			key = dbgio_read();
+
+			if (key == 3)
+				arch_exit();
+	
+			break;
+		}
 	}
 
 	return key;
@@ -202,6 +237,7 @@ void conio_setch(int ch) {
 			break;
 		case CONIO_TTY_SERIAL:
 		case CONIO_TTY_STDIO:
+		case CONIO_TTY_DBGIO:
 			conio_deadvance_cursor();
 			conio_putch(ch);
 			break;
@@ -240,6 +276,9 @@ void conio_putch(int ch) {
 			else if (ch == '\r')
 				break;
 			fs_write(conio_serial_fd, &ch, 1);
+			break;
+		case CONIO_TTY_DBGIO:
+			dbgio_write(ch);
 			break;
 	}
 }
@@ -284,6 +323,9 @@ void conio_clear() {
 			break;
 		case CONIO_TTY_STDIO:
 			fs_write(conio_serial_fd, (void *)"\x1b[2J", 4);
+			break;
+		case CONIO_TTY_DBGIO:
+			dbgio_write_buffer((uint8 *)"\x1b[2J", 4);
 			break;
 	}
 }
@@ -344,6 +386,8 @@ int conio_init(int ttymode, int inputmode) {
 			break;
 		case CONIO_TTY_SERIAL:
 			conio_serial_fd = 1;
+			break;
+		case CONIO_TTY_DBGIO:
 			break;
 		default:
 			assert_msg( false, "Unknown CONIO TTY mode" );
