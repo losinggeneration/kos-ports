@@ -21,10 +21,13 @@ int kosh_init();
 void kosh_shutdown();
 
 /** Call to add a built-in command to the shell. */
-void builtins_add(const char * cmd, const char * helpmsg, void (*handler)(int argc, char *argv[]));
+void kosh_builtins_add(const char * cmd, const char * helpmsg, void (*handler)(int argc, char *argv[]));
 
 /** Call to remove an added built-in command from the shell. */
-void builtins_remove(const char * cmd);
+void kosh_builtins_remove(const char * cmd);
+
+/** Call to wait for the KOSH thread to exit (e.g. in a standalone shell) */
+void kosh_join();
 
 __END_DECLS
 

@@ -7,10 +7,10 @@
 #define _KOSH_BUILTIN_H
 
 /* the func */
-int builtin_command(int argc, char *argv[]);
+int kosh_builtin_command(int argc, char *argv[]);
 
-void builtins_init();
-void builtins_shutdown();
+void kosh_builtins_init();
+void kosh_builtins_shutdown();
 
 #endif
 		

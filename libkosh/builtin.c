@@ -21,7 +21,7 @@ typedef struct builtin {
 	void (*handler)(int argc, char *argv[]);
 } builtin_t;
 
-SLIST_HEAD(builtin_list, builtin) builtins;
+static SLIST_HEAD(builtin_list, builtin) builtins;
 
 /* print command list/desc */
 static void builtin_help(int argc, char *argv[]) {
@@ -381,7 +381,7 @@ static void builtin_sshot(int argc, char *argv[]) {
 
 
 /* try to run a builtin command, return 0 if there is no such builtin */
-int builtin_command(int argc, char *argv[]) {
+int kosh_builtin_command(int argc, char *argv[]) {
 	int i;
 	builtin_t * b;
 
@@ -418,7 +418,7 @@ void kosh_builtin_remove(const char * cmd) {
 }
 
 /* Setup all our builtins */
-void builtins_init() {
+void kosh_builtins_init() {
 	SLIST_INIT(&builtins);
 
 	/* table of the builtin commands, their help mesg,  and their handler funcs */
@@ -447,7 +447,7 @@ void builtins_init() {
 }
 
 /* Kill our list */
-void builtins_shutdown() {
+void kosh_builtins_shutdown() {
 	builtin_t * c, * n;
 
 	c = SLIST_FIRST(&builtins);

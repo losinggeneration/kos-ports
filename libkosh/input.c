@@ -35,7 +35,7 @@ void input_oneloop() {
 	}
 
 	/* try to run the command as a builtin */
-	if (!builtin_command(argc, argv)) {
+	if (!kosh_builtin_command(argc, argv)) {
 		/* makeabspath(buff, argv[0], MAX_FN_LEN); */
 
 		/* the builtin failed so we try an external */
