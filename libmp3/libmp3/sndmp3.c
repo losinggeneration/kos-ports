@@ -46,7 +46,7 @@ static int bs_count;
 #define PCM_WATER 65536			/* Amt to send to the SPU */
 #define PCM_SIZE (PCM_WATER+16384)	/* Total buffer size */
 static char *pcm_buffer = NULL, *pcm_ptr;
-static int pcm_count;
+static int pcm_count, pcm_discard;
 
 static snd_stream_hnd_t stream_hnd = -1;
 
@@ -114,7 +114,7 @@ static void* xing_callback(snd_stream_hnd_t hnd, int size, int * actual) {
 		return NULL;
 
 	/* Dump the last PCM packet */
-	pcm_empty(size);
+	pcm_empty(pcm_discard);
 
 	/* Loop decoding until we have a full buffer */
 	while (pcm_count < size) {
@@ -140,7 +140,7 @@ static void* xing_callback(snd_stream_hnd_t hnd, int size, int * actual) {
 		}*/
 	}
 
-	*actual = size;
+	pcm_discard = *actual = size;
 
 	/* Got it successfully */
 	return pcm_buffer;
@@ -177,7 +177,7 @@ static int xing_init(const char *fn) {
 	bs_ptr = bs_buffer; bs_count = 0;
 	if (pcm_buffer == NULL)
 		pcm_buffer = malloc(PCM_SIZE);
-	pcm_ptr = pcm_buffer; pcm_count = 0;
+	pcm_ptr = pcm_buffer; pcm_count = pcm_discard = 0;
 
 	/* Fill bitstream buffer */
 	if (bs_fill() < 0) {
