@@ -45,10 +45,12 @@ struct Color {
 
 	Color & operator *= (const Color & other) {
 		*this = *this * other;
+		return *this;
 	}
 
 	Color & operator += (const Color & other) {
 		*this = *this + other;
+		return *this;
 	}
 
 	operator uint32() const {
