@@ -45,7 +45,7 @@ int lwip_kos_init() {
 		(src >> 8) & 0xff, \
 		(src >> 0) & 0xff)
 
-	printf("net_lwip: initializing\n");
+	printf("net_lwip: initializing, ip %08lx mask %08lx gw %08lx\n", cfg.ip, cfg.netmask, cfg.gateway);
 	/* IP4_ADDR(&dfl_ip, 10,3,2,6);
 	IP4_ADDR(&dfl_nm, 255,255,255,0);
 	IP4_ADDR(&dfl_gw, 10,3,2,1); */
