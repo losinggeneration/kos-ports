@@ -39,7 +39,7 @@ LWIPOBJS=$(LWIPFILES:.c=.o)
 
 DCLOADOBJS=dcload/commands.o dcload/dcload-lwip.o dcload/dcload_lwip_syscall.o dcload/syscalls.o
 
-TARGET = liblwip.a
+TARGET = liblwip4.a
 OBJS = $(LWIPOBJS) liblwip.o dhcp/dhcp.o $(DCLOADOBJS)
 
 SUBDIRS = dcload
