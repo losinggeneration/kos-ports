@@ -16,7 +16,6 @@
 #include <kos/sem.h>
 #include <dc/maple/keyboard.h>
 #include <conio/conio.h>
-#include <arch/dbgio.h>
 
 CVSID("$Id: input.c,v 1.7 2003/07/15 07:36:16 bardtx Exp $");
 

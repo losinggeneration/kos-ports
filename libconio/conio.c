@@ -13,10 +13,10 @@
 #include <assert.h>
 #include <kos/sem.h>
 #include <dc/maple/keyboard.h>
+#include <dc/scif.h>
 #include <conio/conio.h>
 #include <conio/draw.h>
 #include <conio/input.h>
-#include <arch/dbgio.h>
 
 /* the cursor */
 conio_cursor_t conio_cursor;
@@ -46,7 +46,7 @@ void conio_scroll() {
 			conio_cursor.row--;
 			break;
 		case CONIO_TTY_SERIAL:
-			dbgio_write_buffer((const uint8 *)"\x1b[M", 3);
+			scif_write_buffer((const uint8 *)"\x1b[M", 3, 1);
 			break;
 		case CONIO_TTY_STDIO:
 			fs_write(conio_serial_fd, (void *)"\x1b[M", 3);
@@ -69,9 +69,9 @@ void conio_deadvance_cursor() {
 			}
 			break;
 		case CONIO_TTY_SERIAL:
-			dbgio_write(8);
-			dbgio_write(32);
-			dbgio_write(8);
+			scif_write(8);
+			scif_write(32);
+			scif_write(8);
 			break;
 		case CONIO_TTY_STDIO:
 			fs_write(conio_serial_fd, (void *)"\x8\x20\x8", 3);
@@ -92,7 +92,7 @@ void conio_advance_cursor() {
 			}
 			break;
 		case CONIO_TTY_SERIAL:
-			dbgio_write_buffer((const uint8 *)"\x1b[1C", 4);
+			scif_write_buffer((const uint8 *)"\x1b[1C", 4, 1);
 			break;
 		case CONIO_TTY_STDIO:
 			fs_write(conio_serial_fd, (void *)"\x1b[1C", 4);
@@ -110,7 +110,7 @@ void conio_gotoxy(int x, int y) {
 		case CONIO_TTY_SERIAL: {
 			char tmp[256];
 			sprintf(tmp, "\x1b[%d;%df", x, y);
-			dbgio_write_buffer(tmp, strlen(tmp));
+			scif_write_buffer(tmp, strlen(tmp), 1);
 			break;
 		}
 		case CONIO_TTY_STDIO: {
@@ -134,7 +134,7 @@ int conio_getch() {
 #endif
 			break;
 		case CONIO_TTY_SERIAL: {
-			while ((key = dbgio_read()) == -1) { thd_pass(); }
+			while ((key = scif_read()) == -1) { thd_pass(); }
 
 			if (key == 3)
 				arch_exit();
@@ -168,7 +168,7 @@ int conio_check_getch() {
 #endif
 			break;
 		case CONIO_TTY_SERIAL: {
-			key = dbgio_read();
+			key = scif_read();
 
 			if (key == 3)
 				arch_exit();
@@ -229,10 +229,10 @@ void conio_putch(int ch) {
 			break;
 		case CONIO_TTY_SERIAL:
 			if (ch == '\n')
-				dbgio_write('\r');
+				scif_write('\r');
 			else if (ch == '\r')
 				break;
-			dbgio_write(ch);
+			scif_write(ch);
 			break;
 		case CONIO_TTY_STDIO:
 			if (ch == '\n')
@@ -280,7 +280,7 @@ void conio_clear() {
 					conio_virtscr[row][col] = ' ';
 			break;
 		case CONIO_TTY_SERIAL:
-			dbgio_write_buffer((uint8 *)"\x1b[2J", 4);
+			scif_write_buffer((uint8 *)"\x1b[2J", 4, 1);
 			break;
 		case CONIO_TTY_STDIO:
 			fs_write(conio_serial_fd, (void *)"\x1b[2J", 4);
@@ -321,7 +321,7 @@ static void conio_thread(void *param) {
 #endif
 		} else {
 			if (conio_ttymode == CONIO_TTY_SERIAL)
-				dbgio_flush();
+				scif_flush();
 			thd_sleep(1000/60);	/* Simulate frame delay */
 		}
 		sem_signal(ft_mutex);
