@@ -37,10 +37,10 @@ static const char * sources[] = {
 	"CD"
 };
 
-int lwip_kos_init() {
-	netcfg_t cfg;
+netcfg_t lwip_netcfg;
 
-	if (netcfg_load(&cfg) < 0) {
+int lwip_kos_init() {
+	if (netcfg_load(&lwip_netcfg) < 0) {
 		printf("net_lwip: can't load config -- giving up!\n");
 		return -1;
 	}
@@ -53,13 +53,13 @@ int lwip_kos_init() {
 		(src >> 0) & 0xff)
 
 	printf("net_lwip: initializing, ip %08lx mask %08lx gw %08lx src %s\n",
-		cfg.ip, cfg.netmask, cfg.gateway, sources[cfg.src]);
+		lwip_netcfg.ip, lwip_netcfg.netmask, lwip_netcfg.gateway, sources[lwip_netcfg.src]);
 	/* IP4_ADDR(&dfl_ip, 10,3,2,6);
 	IP4_ADDR(&dfl_nm, 255,255,255,0);
 	IP4_ADDR(&dfl_gw, 10,3,2,1); */
-	SETIP(&dfl_ip, cfg.ip);
-	SETIP(&dfl_nm, cfg.netmask);
-	SETIP(&dfl_gw, cfg.gateway);
+	SETIP(&dfl_ip, lwip_netcfg.ip);
+	SETIP(&dfl_nm, lwip_netcfg.netmask);
+	SETIP(&dfl_gw, lwip_netcfg.gateway);
 	lwip_init_all_static(&dfl_ip, &dfl_nm, &dfl_gw);
 
 	// nmmgr_handler_add(&ls.nmmgr);

@@ -54,6 +54,10 @@ int lwip_get_netmask(struct ip_addr * out);
 void tcp_timer_needed();
 int kti_init();
 
+/* Netcfg as read by the lwIP init in lwip_kos_init */
+#include <kos/netcfg.h>
+extern netcfg_t lwip_netcfg;
+
 /* Sockets stuff */
 #include <lwip/sockets.h>
 int lwip_accept(int s, struct sockaddr *addr, socklen_t *addrlen);
