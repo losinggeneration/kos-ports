@@ -375,7 +375,7 @@ static err_t connect_tcp(void * arg, struct tcp_pcb * pcb, err_t err) {
 // UDP callbacks
 
 static void recv_udp(void *arg, struct udp_pcb *pcb, struct pbuf *p, struct ip_addr *addr, u16_t port) {
-	printf("kti: recv_udp for %d called\n", (int)arg);
+	// printf("kti: recv_udp for %d called\n", (int)arg);
 
 	// This perhaps still needs work... depends on how lwIP implements
 	// UDP routing internally. Could cause problems with having multiple UDP
@@ -1175,8 +1175,8 @@ int lwip_sendto(int s, const void *dataptr, int size, unsigned int flags,
 		const uint8 * src = (const uint8 *)dataptr;
 		int i;
 		for (q=pbuf; q; q=q->next) {
-			printf("putting %d bytes into pbuf @ %p\n",
-				q->len, q);
+			//printf("putting %d bytes into pbuf @ %p\n",
+			//	q->len, q);
 			for (i=0; i<q->len; i++)
 				((u8_t *)q->payload)[i] = *(src++);
 		}

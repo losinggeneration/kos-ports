@@ -79,6 +79,9 @@ int lwip_select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptse
 	struct timeval *timeout);
 int lwip_ioctl(int s, long cmd, void *argp);
 
+// Simple DNS client
+int lwip_gethostbyname(const struct sockaddr_in * dnssrv, const char * name, uint8 * ipout);
+
 __END_DECLS
 
 #endif	/* __LWIP_LWIP_H */
