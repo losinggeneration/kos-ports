@@ -390,7 +390,7 @@ int conio_init(int ttymode, int inputmode) {
 		case CONIO_TTY_DBGIO:
 			break;
 		default:
-			assert_msg( false, "Unknown CONIO TTY mode" );
+			assert_msg( 0, "Unknown CONIO TTY mode" );
 			conio_ttymode = CONIO_TTY_PVR;
 			break;
 	}

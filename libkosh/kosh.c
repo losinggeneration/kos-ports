@@ -14,7 +14,7 @@ volatile int kosh_exit = -2;
 
 static void kosh_thread(void *p) {
 	conio_printf("  **** KOSH, The KallistiOS Shell ****\n");
-	chdir("/");
+	kosh_chdir("/");
 	while (!kosh_exit)
 		input_oneloop();
 	conio_printf("Kosh is done\n");

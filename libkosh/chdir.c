@@ -61,7 +61,7 @@ int makeabspath(char *buff, char *path, size_t size) {
 }
 
 /* change the current directory (dir is an absolute path for now) */
-int chdir(char *dir) {
+int kosh_chdir(char *dir) {
 	char buff[MAX_FN_LEN];
 
 	makeabspath(buff, dir, MAX_FN_LEN);

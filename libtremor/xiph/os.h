@@ -18,9 +18,8 @@
  ********************************************************************/
 
 #include <math.h>
+#include <alloca.h>
 #include "os_types.h"
-
-#define alloca __builtin_alloca
 
 #ifndef _V_IFDEFJAIL_H_
 #  define _V_IFDEFJAIL_H_

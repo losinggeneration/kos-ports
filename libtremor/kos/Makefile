@@ -5,7 +5,7 @@
 #   
 # $Id: Makefile,v 1.1 2002/09/04 03:28:40 bardtx Exp $
 
-KOS_CFLAGS += -DPACKAGE=\"libvorbisidec\" -DVERSION=\"1.0.2\" \
+KOS_CFLAGS += -DPACKAGE="libvorbisidec" -DVERSION="1.0.2" \
 	-DHAVE_DLFCN_H=1 -DHAVE_ALLOCA=1  -I. -I../xiph \
 	-O2 -fsigned-char  -D_REENTRANT
 

@@ -9,7 +9,7 @@
 #include <arch/types.h>
 
 int makeabspath(char *buff, char *path, size_t size);
-int chdir(char *dir);
+int kosh_chdir(char *dir);
 char *getcwd(char *buf, size_t size);
 
 #endif

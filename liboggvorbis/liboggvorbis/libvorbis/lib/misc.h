@@ -51,7 +51,7 @@ extern void _VDBG_free(void *ptr,char *file,long line);
 /* Following lines (for Dreamcast compatiblity) added by
  * Thorsten Titze <thorsten.titze@hangar-eleven.de>
  */
-
-#define alloca __builtin_alloca
+#include <alloca.h>
+// #define alloca __builtin_alloca
 
 

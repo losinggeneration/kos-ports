@@ -43,6 +43,8 @@
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
+#include <time.h>
+#include <sys/time.h>
 
 #include "lwipopts.h"
 
@@ -62,6 +64,7 @@ typedef ptr_t mem_ptr_t;
 #define PACK_STRUCT_BEGIN
 #define PACK_STRUCT_END
 
+#if 0
 #define _SYS_TYPES_FD_SET
 #define NBBY    8               /* number of bits in a byte */
 
@@ -86,6 +89,7 @@ typedef struct _types_fd_set {
   for (__i = 0; __i < sizeof (*(p)); ++__i)  \
     *__tmp++ = 0;                            \
 } while (0)
+#endif
                       
 #ifndef LWIP_PLATFORM_DIAG
 #define LWIP_PLATFORM_DIAG(x)   do {printf x;} while(0)

@@ -95,7 +95,7 @@ static void builtin_cd(int argc, char *argv[]) {
 		return;
 	}
 
-	chdir(argv[1]);
+	kosh_chdir(argv[1]);
 }
 
 /* print the current directory */
