@@ -35,6 +35,10 @@ struct Color {
 		return Color(a*other.a, r*other.r, g*other.g, b*other.b);
 	}
 
+	Color operator * (float factor) const {
+		return Color(a*factor, r*factor, g*factor, b*factor);
+	}
+
 	Color operator + (const Color & other) const {
 		return Color(a+other.a, r+other.r, g+other.g, b+other.b);
 	}
@@ -48,7 +52,12 @@ struct Color {
 	}
 
 	operator uint32() const {
-		return plx_pack_color(a, r, g, b);
+		float ta, tr, tg, tb;
+		ta = (a < 0.0f) ? 0.0f : (a > 1.0f) ? 1.0f : a;
+		tr = (r < 0.0f) ? 0.0f : (r > 1.0f) ? 1.0f : r;
+		tg = (g < 0.0f) ? 0.0f : (g > 1.0f) ? 1.0f : g;
+		tb = (b < 0.0f) ? 0.0f : (b > 1.0f) ? 1.0f : b;
+		return plx_pack_color(ta, tr, tg, tb);
 	}
 
 
