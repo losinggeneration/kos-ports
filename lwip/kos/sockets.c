@@ -1,7 +1,7 @@
 /* KallistiOS ##version##
 
    sockets.c
-   Copyright (C)2003 Dan Potter
+   Copyright (C)2003,2004 Dan Potter
 */
 
 #include <kos/mutex.h>
@@ -176,7 +176,8 @@ static err_t peerclosed_tcp(int s, struct tcp_pcb *pcb) {
 	return ERR_OK;
 }
 
-static err_t recv_tcp_data(int s, struct tcp_pcb * pcb, struct pbuf * p, err_t err) {
+// This works for both UDP and TCP.
+static err_t recv_data(int s, struct pbuf * p) {
 	sockfd_t	* fd;
 
 	// Get our socket.
@@ -214,7 +215,7 @@ static err_t recv_tcp_data(int s, struct tcp_pcb * pcb, struct pbuf * p, err_t e
 static err_t recv_tcp(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err_t err) {
 	// printf("kti: recv_tcp for %d called (pcb %p, pbuf %p, len %lu, err %d)\n", (int)arg, pcb, p, p->tot_len, err);
 	if (p)
-		return recv_tcp_data((int)arg, pcb, p, err);
+		return recv_data((int)arg, p);
 	else
 		return peerclosed_tcp((int)arg, pcb);
 }
@@ -376,7 +377,10 @@ static err_t connect_tcp(void * arg, struct tcp_pcb * pcb, err_t err) {
 static void recv_udp(void *arg, struct udp_pcb *pcb, struct pbuf *p, struct ip_addr *addr, u16_t port) {
 	printf("kti: recv_udp for %d called\n", (int)arg);
 
-	// TODO
+	// This perhaps still needs work... depends on how lwIP implements
+	// UDP routing internally. Could cause problems with having multiple UDP
+	// connections if it does it wrong though.
+	recv_data((int)arg, p);
 }
          
 /////////////////////////////////////////////////////////////////////////////
@@ -469,8 +473,10 @@ int lwip_connect(int s, struct sockaddr *name, socklen_t namelen) {
 	int		port, rv = 0;
 
 	s = sock_for_fd(s);
-	if (s < 0)
+	if (s < 0) {
+		errno = EBADF;
 		return -1;
+	}
 	fd = fds + s;
 
 	// Make sure it's an internet address we understand.
@@ -582,8 +588,10 @@ int lwip_bind(int s, struct sockaddr *name, socklen_t namelen) {
 	int		port, rv = 0;
 
 	s = sock_for_fd(s);
-	if (s < 0)
+	if (s < 0) {
+		errno = EBADF;
 		return -1;
+	}
 	fd = fds + s;
 
 	// Make sure it's an internet address we understand.
@@ -641,8 +649,10 @@ int lwip_listen(int s, int backlog) {
 	int		rv = 0, i;
 
 	s = sock_for_fd(s);
-	if (s < 0)
+	if (s < 0) {
+		errno = EBADF;
 		return -1;
+	}
 	fd = fds + s;
 
 	// Get access
@@ -663,7 +673,7 @@ int lwip_listen(int s, int backlog) {
 
 	// Make sure we're not already listening.
 	if (fd->conns) {
-		///
+		errno = EINVAL;
 		rv = -1; goto out;
 	}
 
@@ -697,8 +707,10 @@ int lwip_accept(int s, struct sockaddr *addr, socklen_t *addrlen) {
 	int		rv = 0, i, ns;
 
 	s = sock_for_fd(s);
-	if (s < 0)
+	if (s < 0) {
+		errno = EBADF;
 		return -1;
+	}
 	fd = fds + s;
 
 	// Make sure it's an internet address we understand.
@@ -712,7 +724,7 @@ int lwip_accept(int s, struct sockaddr *addr, socklen_t *addrlen) {
 
 	// Is it the right type?
 	if (fd->type != SOCK_STREAM) {
-		///
+		errno = EINVAL;
 		rv = -1; goto out;
 	}
 
@@ -762,7 +774,7 @@ out:
 	return rv;
 }
 
-static int recv_common(int s, void * mem, int len, unsigned int flags) {
+static int recv_common(int s, void * mem, int len, unsigned int flags, int istcp) {
 	sockfd_t	* fd;
 	int		rv = 0, amt, totalrcv;
 	uint8		* buf;
@@ -841,7 +853,8 @@ static int recv_common(int s, void * mem, int len, unsigned int flags) {
 	// ACK the amount we actually read out
 	//printf("lwip_read(%d): ACK'ing %d bytes\n", s, totalrcv);
 	rv = totalrcv;
-	tcp_recved(fd->tcppcb, rv);
+	if (istcp)
+		tcp_recved(fd->tcppcb, rv);
 	fd->recv -= rv;
 	//printf("returning\n");
 
@@ -911,16 +924,20 @@ out:
 
 int lwip_recv(int s, void *mem, int len, unsigned int flags) {
 	s = sock_for_fd(s);
-	if (s < 0)
+	if (s < 0) {
+		errno = EBADF;
 		return -1;
+	}
 
-	return recv_common(s, mem, len, flags);
+	return recv_common(s, mem, len, flags, 1);
 }
 
 int lwip_send(int s, const void *mem, int size, unsigned int flags) {
 	s = sock_for_fd(s);
-	if (s < 0)
+	if (s < 0) {
+		errno = EBADF;
 		return -1;
+	}
 
 	return send_common(s, mem, size, flags);
 }
@@ -935,7 +952,7 @@ int lwip_write(int s, const void *mem, int len) {
 
 static ssize_t lwip_vfs_read(void * hnd, void * buffer, size_t cnt) {
 	int s = ((int)hnd) - 1;
-	return recv_common(s, buffer, cnt, 0);
+	return recv_common(s, buffer, cnt, 0, 1);
 }
 
 static ssize_t lwip_vfs_write(void * hnd, const void * buffer, size_t cnt) {
@@ -1079,18 +1096,109 @@ int lwip_setsockopt (int s, int level, int optname, const void *optval, socklen_
 	return -1;
 }
 
+// This is a super hacky implementation of recvfrom (and below, sendto).
+// It assumes that send/recv are used on TCP only and recvfrom/sendto are
+// used on UDP only. This really needs to be fixed eventually.
 int lwip_recvfrom(int s, void *mem, int len, unsigned int flags,
 	struct sockaddr *from, socklen_t *fromlen)
 {
-	errno = ENOSYS;
-	return -1;
+	s = sock_for_fd(s);
+	if (s < 0) {
+		errno = EBADF;
+		return -1;
+	}
+
+	// XXX from / fromlen aren't filled in.
+
+	return recv_common(s, mem, len, flags, 0);
 }
 	
 int lwip_sendto(int s, const void *dataptr, int size, unsigned int flags, 
 	struct sockaddr *to, socklen_t tolen)
 {
-	errno = ENOSYS;
-	return -1;
+	sockfd_t	* fd;
+	struct ip_addr	ip;
+	struct pbuf	* pbuf = NULL;
+	int		port, rv = 0;
+	err_t		err;
+
+	if (flags != 0) {
+		errno = EINVAL;
+		return -1;
+	}
+
+	s = sock_for_fd(s);
+	if (s < 0) {
+		errno = EBADF;
+		return -1;
+	}
+	fd = fds + s;
+
+	// Get access
+	mutex_lock(fd->mutex);
+
+	// Make sure we're doing UDP here... we don't support sendto for TCP.
+	if (fd->tcppcb) {
+		errno = EINVAL;
+		rv = -1; goto out;
+	}
+
+	// We might not have a udppcb still, if we just did socket().
+	if (!fd->udppcb)
+		fd->udppcb = udp_new();
+
+	// Convert the address to an lwIP-happy format
+	ip.addr = ((struct sockaddr_in *)to)->sin_addr.s_addr;
+	port = ((struct sockaddr_in *)to)->sin_port;
+
+	// Make sure we have the recv callback setup.
+	fd->recv = 0;
+	udp_recv(fd->udppcb, recv_udp, (void *)s);
+
+	// Connect this to the specified destination.
+	if ((err = udp_connect(fd->udppcb, &ip, ntohs(port))) != ERR_OK) {
+		printf("connect: err is %d\n", err);
+		// XXX Imprecise
+		errno = ENOMEM;
+		rv = -1; goto out;
+	}
+
+	// Make a pbuf for the data we want to send.
+	pbuf = pbuf_alloc(PBUF_RAW, size, PBUF_POOL);
+	if (pbuf == NULL) {
+		printf("couldn't alloc pbuf of size %d\n", size);
+		errno = ENOMEM;
+		rv = -1; goto out;
+	}
+	{
+		struct pbuf *q;
+		const uint8 * src = (const uint8 *)dataptr;
+		int i;
+		for (q=pbuf; q; q=q->next) {
+			printf("putting %d bytes into pbuf @ %p\n",
+				q->len, q);
+			for (i=0; i<q->len; i++)
+				((u8_t *)q->payload)[i] = *(src++);
+		}
+	}
+	//memcpy(pbuf->payload, dataptr, size);
+
+	// Send the data on the socket.
+	if ((err = udp_send(fd->udppcb, pbuf)) != ERR_OK) {
+		printf("send: err is %d\n", err);
+		// XXX Imprecise
+		errno = ENOMEM;
+		rv = -1; goto out;
+	}
+
+	// Let go of the pbuf before returning.
+	pbuf_free(pbuf); pbuf = NULL;
+
+out:
+	if (pbuf)
+		pbuf_free(pbuf);
+	mutex_unlock(fd->mutex);	
+	return rv;
 }
 	
 int lwip_ioctl(int s, long cmd, void *argp) {
