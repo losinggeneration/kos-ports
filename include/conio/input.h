@@ -27,7 +27,8 @@ void conio_input_callback(conio_input_callback_t cb);
    to type something; the output will be placed in dst, which should
    be at least dstcnt bytes large. Block, if non-zero, is the maximum number
    of milliseconds to block before giving up (in which case we abort and 
-   return -1). Returns 0 on success, -1 on failure. */
+   return -1); if block < 0, we wait infinitely. Returns 0 on success,
+   -1 on failure. */
 int conio_input_getline(int block, char *dst, int dstcnt);
 
 #endif

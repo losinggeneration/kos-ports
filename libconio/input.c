@@ -101,8 +101,13 @@ int conio_input_getline(int block, char *dst, int dstcnt) {
 		return -1;
 
 	/* Wait for some input to be ready */
-	if (sem_wait_timed(cb_sem, block) < 0)
-		return -1;
+	if (block > 0) {
+		if (sem_wait_timed(cb_sem, block) < 0)
+			return -1;
+	} else {
+		if (sem_wait(cb_sem) < 0)
+			return -1;
+	}
 
 	/* Grab the mutex and retrieve the line */
 	sem_wait(cb_mutex);
