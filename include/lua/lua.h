@@ -1,7 +1,7 @@
 /* KallistiOS ##version##
 
    lua.h
-   (c)2002 Dan Potter
+   Copyright (C)2002,2003 Dan Potter
 
    $Id: lua.h,v 1.1 2003/02/27 03:46:29 bardtx Exp $
 */
@@ -13,10 +13,10 @@
 __BEGIN_DECLS
 
 /* Just include the stuff from the Lua tree */
-#include "../../addons/lua/include/lua.h"
-#include "../../addons/lua/include/lauxlib.h"
-#include "../../addons/lua/include/luadebug.h"
-#include "../../addons/lua/include/lualib.h"
+#include "../../lua/include/lua.h"
+#include "../../lua/include/lauxlib.h"
+// #include "../../lua/include/luadebug.h"
+#include "../../lua/include/lualib.h"
 
 /* And our fputs shim */
 void luaB_set_fputs(void (* fputs_target)(const char *));
