@@ -30,7 +30,9 @@ public:
 	// Attribute sets
 	enum FilterType {
 		FilterNone = PLX_FILTER_NONE,
-		FilterBilinear = PLX_FILTER_BILINEAR
+		FilterBilinear = PLX_FILTER_BILINEAR,
+		FilterTrilinear1 = PVR_FILTER_TRILINEAR1,
+		FilterTrilinear2 = PVR_FILTER_TRILINEAR2
 	};
 	void	setFilter(FilterType filter);
 
