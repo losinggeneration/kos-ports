@@ -63,8 +63,12 @@ static matrix_t ml __attribute__((aligned(32)));
 
 /* Load an arbitrary matrix */
 void plx_mat3d_load(matrix_t * m) {
-	mat_load(m);
-	mat_store(trans_mats + matrix_mode);
+	memcpy(trans_mats + matrix_mode, m, sizeof(matrix_t));
+}
+
+/* Save the matrix (whoa!) */
+void plx_mat3d_store(matrix_t * m) {
+	memcpy(m, trans_mats + matrix_mode, sizeof(matrix_t));
 }
 
 /* Set the depth range */

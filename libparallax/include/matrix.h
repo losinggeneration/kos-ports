@@ -71,6 +71,9 @@ void plx_mat3d_identity();
 /** Load a raw matrix */
 void plx_mat3d_load(matrix_t * src);
 
+/** Save a raw matrix */
+void plx_mat3d_store(matrix_t * src);
+
 /** Setup viewport parameters */
 void plx_mat3d_viewport(int x1, int y1, int width, int height);
 
