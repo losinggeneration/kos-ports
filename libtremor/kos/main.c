@@ -13,6 +13,9 @@ int sndoggvorbis_init() {
 		return -1;
 	}
 
+	if (snd_stream_init() < 0)
+		return -1;
+
 	printf("sndserver: initializing libtremor 1.0 [Tremor 20020902 based]\n");
 	thd = thd_create(sndserver_thread, NULL);
 	if (thd != NULL) {
