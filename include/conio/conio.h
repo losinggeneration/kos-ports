@@ -6,7 +6,7 @@
 
  Adapted from Kosh, (c)2000 Jordan DeLong
 
- $Id: conio.h,v 1.1 2003/02/27 03:46:29 bardtx Exp $
+ $Id: conio.h,v 1.2 2003/06/19 04:33:03 bardtx Exp $
 
 */
 
@@ -56,13 +56,14 @@ void conio_set_theme(int theme);
 #define CONIO_THEME_C64		2
 
 /* Init modes:
-   - TTY can be serial or PVR console
+   - TTY can be serial, PVR console, or stdio (pty)
    - Input mode can be NONE, LINE, CHAR
 
    The only valid combination for now is TTY_PVR and INPUT_LINE */
 #define CONIO_TTY_NONE		0
 #define CONIO_TTY_PVR		1
 #define CONIO_TTY_SERIAL	2
+#define CONIO_TTY_STDIO		3
 #define CONIO_INPUT_NONE	0
 #define CONIO_INPUT_LINE	1
 #define CONIO_INPUT_CHAR	2

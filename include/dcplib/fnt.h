@@ -18,7 +18,7 @@
  
      For further information visit http://plib.sourceforge.net
 
-     $Id: fnt.h,v 1.1 2003/02/27 03:46:29 bardtx Exp $
+     $Id: fnt.h,v 1.2 2003/06/19 04:33:03 bardtx Exp $
 */
 
 // Modified for Dreamcast/KOS by Peter Hatch
@@ -27,6 +27,7 @@
 #define _FNT_H_  1
 
 #include <kos.h>
+#include <assert.h>
 #include "sg.h"
 
 const int FNTMAX_CHAR = 256;

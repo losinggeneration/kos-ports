@@ -48,7 +48,9 @@ static void draw_char(float x1, float y1, float z1, float a, float r,
 	if (c == ' ')
 		return;
 
-	assert( c > ' ' && c < 127 );
+	// assert( c > ' ' && c < 127 );
+	if (!( c > ' ' && c < 127 ))
+		return;
 	
 	ix = (c % 16) * 16;
 	iy = (c / 16) * 24;

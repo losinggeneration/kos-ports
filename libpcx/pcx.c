@@ -10,7 +10,7 @@
 #include <pcx/pcx.h>
 #include <assert.h>
 
-CVSID("$Id: pcx.c,v 1.3 2003/03/14 05:53:57 bardtx Exp $");
+CVSID("$Id: pcx.c,v 1.4 2003/06/19 04:33:03 bardtx Exp $");
 
 typedef struct {
 	char   mfg;               /* manufacturer, always 0xa0		*/
@@ -47,7 +47,7 @@ int pcx_to_img(const char *fn, kos_img_t *rv) {
 
 	/* Open the file */
 	fd = fs_open(fn, O_RDONLY);
-	if (fd == 0) {
+	if (fd < 0) {
 		printf("pcx_load(%s): Couldn't open file\r\n", fn);
 		return -1;
 	}

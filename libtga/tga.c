@@ -17,7 +17,7 @@
 #include <tga/tga.h>
 #include <assert.h>
 
-CVSID("$Id: tga.c,v 1.5 2003/03/14 05:53:57 bardtx Exp $");
+CVSID("$Id: tga.c,v 1.6 2003/06/19 04:33:03 bardtx Exp $");
 
 typedef struct {
 	uint8  image_id_length __attribute__((packed));		/* Length of Image ID field */
@@ -47,7 +47,7 @@ int tga_to_img(const char *fn, kos_img_t *rv) {
 
 	/* Open the file */
 	fd = fs_open(fn, O_RDONLY);
-	if (fd == 0) {
+	if (fd < 0) {
 		dbglog(DBG_ERROR, "tga_load(%s): Couldn't open file\n", fn);
 		return -1;
 	}

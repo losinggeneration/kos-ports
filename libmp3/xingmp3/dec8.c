@@ -97,6 +97,7 @@ IN_OUT structure returns:
 
 #include <float.h>
 #include <math.h>
+#include <string.h>
 #include "L3.h"
 #include "mhead.h"		/* mpeg header structure */
 

@@ -37,6 +37,7 @@
 
 #ifdef LWIP_DEBUG
 
+#include <assert.h>
 /* #define ASSERT(x,y) if(!(y)) {printf("Assertion \"%s\" failed at line %d in %s\n", \
                                      x, __LINE__, __FILE__); fflush(NULL); abort();} */
 #define ASSERT(x, y) assert_msg(y, x)

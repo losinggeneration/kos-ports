@@ -17,7 +17,7 @@
 #include <mp3/sndserver.h>
 #include <mp3/sndmp3.h>
 
-CVSID("$Id: sndmp3.c,v 1.5 2003/02/27 04:25:41 bardtx Exp $");
+CVSID("$Id: sndmp3.c,v 1.6 2003/06/19 04:33:03 bardtx Exp $");
 
 /************************************************************************/
 #include <mhead.h>		/* From xingmp3 */
@@ -153,7 +153,7 @@ static int xing_init(const char *fn) {
 
 	/* Open the file */
 	mp3_fd = fd = fs_open(fn, O_RDONLY);
-	if (fd == 0) {
+	if (fd < 0) {
 		printf("Can't open input file %s\r\n", fn);
 		printf("getwd() returns '%s'\r\n", fs_getwd());
 		return -1;

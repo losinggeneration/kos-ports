@@ -31,6 +31,9 @@ int conio_theme = CONIO_THEME_PLAIN;
 /* freeze/thaw mutex */
 static semaphore_t *ft_mutex;
 
+/* File handle for serial tty */
+file_t conio_serial_fd;
+
 /* scroll everything up a line */
 void conio_scroll() {
 	int i;
@@ -44,6 +47,9 @@ void conio_scroll() {
 			break;
 		case CONIO_TTY_SERIAL:
 			dbgio_write_buffer((const uint8 *)"\x1b[M", 3);
+			break;
+		case CONIO_TTY_STDIO:
+			fs_write(conio_serial_fd, (void *)"\x1b[M", 3);
 			break;
 	}
 }
@@ -67,6 +73,9 @@ void conio_deadvance_cursor() {
 			dbgio_write(32);
 			dbgio_write(8);
 			break;
+		case CONIO_TTY_STDIO:
+			fs_write(conio_serial_fd, (void *)"\x8\x20\x8", 3);
+			break;
 	}
 }
 
@@ -85,6 +94,9 @@ void conio_advance_cursor() {
 		case CONIO_TTY_SERIAL:
 			dbgio_write_buffer((const uint8 *)"\x1b[1C", 4);
 			break;
+		case CONIO_TTY_STDIO:
+			fs_write(conio_serial_fd, (void *)"\x1b[1C", 4);
+			break;
 	}
 }
 
@@ -101,36 +113,78 @@ void conio_gotoxy(int x, int y) {
 			dbgio_write_buffer(tmp, strlen(tmp));
 			break;
 		}
+		case CONIO_TTY_STDIO: {
+			char tmp[256];
+			sprintf(tmp, "\x1b[%d;%df", x, y);
+			fs_write(conio_serial_fd, tmp, strlen(tmp));
+			break;
+		}
 	}
 }
 
 /* blocking call for a character */
 int conio_getch() {
 	int key = -1;
+	uint8 b;
 
 	switch (conio_ttymode) {
 		case CONIO_TTY_PVR:
+#ifdef GFX
 			while ((key = kbd_get_key()) == -1) { thd_pass(); }
+#endif
 			break;
-		case CONIO_TTY_SERIAL:
+		case CONIO_TTY_SERIAL: {
 			while ((key = dbgio_read()) == -1) { thd_pass(); }
+
+			if (key == 3)
+				arch_exit();
+	
 			break;
+		}
+		case CONIO_TTY_STDIO: {
+			int i;
+			i = fs_read(conio_serial_fd, &b, 1);
+			if (i <= 0)
+				return -1;
+			key = b;
+			if (key == '\n')
+				return conio_getch();
+			break;
+		}
 	}
+
 	return key;
 }
 
 /* Check to see if a key has been pressed */
 int conio_check_getch() {
 	int key = -1;
+	uint8 b;
 
 	switch (conio_ttymode) {
 		case CONIO_TTY_PVR:
+#ifdef GFX
 			key = kbd_get_key();
+#endif
 			break;
-		case CONIO_TTY_SERIAL:
+		case CONIO_TTY_SERIAL: {
 			key = dbgio_read();
+
+			if (key == 3)
+				arch_exit();
+	
+			break;
+		}
+		case CONIO_TTY_STDIO:
+			if (fs_total(conio_serial_fd) > 0) {
+				if (fs_read(conio_serial_fd, &b, 1) == 1)
+					key = b;
+			}
+			if (key == '\n')
+				key = -1;
 			break;
 	}
+
 	return key;
 }
 
@@ -147,6 +201,7 @@ void conio_setch(int ch) {
 			}
 			break;
 		case CONIO_TTY_SERIAL:
+		case CONIO_TTY_STDIO:
 			conio_deadvance_cursor();
 			conio_putch(ch);
 			break;
@@ -179,6 +234,13 @@ void conio_putch(int ch) {
 				break;
 			dbgio_write(ch);
 			break;
+		case CONIO_TTY_STDIO:
+			if (ch == '\n')
+				fs_write(conio_serial_fd, "\r", 1);
+			else if (ch == '\r')
+				break;
+			fs_write(conio_serial_fd, &ch, 1);
+			break;
 	}
 }
 
@@ -198,7 +260,8 @@ int conio_printf(const char *fmt, ...) {
 	va_start(args, fmt);
 	i = vsprintf(buff, fmt, args);
 
-	conio_putstr(buff);
+	if (conio_ttymode != CONIO_TTY_NONE)
+		conio_putstr(buff);
 
 	va_end(args);
 
@@ -218,6 +281,9 @@ void conio_clear() {
 			break;
 		case CONIO_TTY_SERIAL:
 			dbgio_write_buffer((uint8 *)"\x1b[2J", 4);
+			break;
+		case CONIO_TTY_STDIO:
+			fs_write(conio_serial_fd, (void *)"\x1b[2J", 4);
 			break;
 	}
 }
@@ -249,10 +315,13 @@ static void conio_thread(void *param) {
 	while (!conio_exit) {
 		sem_wait(ft_mutex);
 		conio_input_frame();
-		if (conio_ttymode == CONIO_TTY_PVR)
+		if (conio_ttymode == CONIO_TTY_PVR) {
+#ifdef GFX
 			conio_draw_frame();
-		else {
-			dbgio_flush();
+#endif
+		} else {
+			if (conio_ttymode == CONIO_TTY_SERIAL)
+				dbgio_flush();
 			thd_sleep(1000/60);	/* Simulate frame delay */
 		}
 		sem_signal(ft_mutex);
@@ -267,9 +336,14 @@ int conio_init(int ttymode, int inputmode) {
 
 	switch (conio_ttymode) {
 		case CONIO_TTY_PVR:
+#ifdef GFX
 			conio_draw_init();
+#endif
+			break;
+		case CONIO_TTY_STDIO:
 			break;
 		case CONIO_TTY_SERIAL:
+			conio_serial_fd = 1;
 			break;
 		default:
 			assert_msg( false, "Unknown CONIO TTY mode" );
@@ -279,8 +353,10 @@ int conio_init(int ttymode, int inputmode) {
 	assert_msg( conio_inputmode == CONIO_INPUT_LINE, "Non-Line input modes not supported yet" );
 
 	conio_input_init();
-	conio_clear();
-	conio_gotoxy(0, 0);
+	if (conio_ttymode == CONIO_TTY_PVR) {
+		conio_clear();
+		conio_gotoxy(0, 0);
+	}
 
 	ft_mutex = sem_create(1);
 
@@ -306,8 +382,10 @@ int conio_shutdown() {
 	/* Delete the sempahore */
 	sem_destroy(ft_mutex);
 
+#ifdef GFX
 	if (conio_ttymode == CONIO_TTY_PVR)
 		conio_draw_shutdown();
+#endif
 	conio_input_shutdown();
 
 	conio_ttymode = CONIO_TTY_NONE;

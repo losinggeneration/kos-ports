@@ -6,7 +6,7 @@
 
  Adapted from Kosh, (c)2000 Jordan DeLong
 
- $Id: input.h,v 1.1 2003/02/27 03:46:29 bardtx Exp $
+ $Id: input.h,v 1.2 2003/07/15 07:36:16 bardtx Exp $
 */
 
 #ifndef __CONIO_INPUT_H
@@ -23,9 +23,11 @@ void conio_input_shutdown();
 typedef void (*conio_input_callback_t)(const char *str);
 void conio_input_callback(conio_input_callback_t cb);
 
-/* Default conio input system: call with block = 1 to wait for the user
+/* Default conio input system: call with block > 0 to wait for the user
    to type something; the output will be placed in dst, which should
-   be at least dstcnt bytes large. Returns 0 on success, -1 on failure. */
+   be at least dstcnt bytes large. Block, if non-zero, is the maximum number
+   of milliseconds to block before giving up (in which case we abort and 
+   return -1). Returns 0 on success, -1 on failure. */
 int conio_input_getline(int block, char *dst, int dstcnt);
 
 #endif

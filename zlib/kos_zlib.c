@@ -37,7 +37,7 @@ int zlib_getlength(char *filename)
   file_t f;
 
   f = fs_open(filename, O_RDONLY);
-  if (!f)
+  if (f < 0)
     return 0;
   if (check_header(f))
   {

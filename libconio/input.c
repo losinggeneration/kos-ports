@@ -11,13 +11,14 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <assert.h>
 #include <kos/limits.h>
 #include <kos/sem.h>
 #include <dc/maple/keyboard.h>
 #include <conio/conio.h>
 #include <arch/dbgio.h>
 
-CVSID("$Id: input.c,v 1.5 2002/09/28 07:55:15 bardtx Exp $");
+CVSID("$Id: input.c,v 1.7 2003/07/15 07:36:16 bardtx Exp $");
 
 /* This module defines a conio input system, if you want to use it. */
 
@@ -91,14 +92,17 @@ static void input_cb_shutdown() {
 int conio_input_getline(int block, char *dst, int dstcnt) {
 	cb_sem_data_t *t, *l;
 
-	assert_msg( block != 0, "non-blocking I/O not supported yet" );
+	/* assert_msg( block != 0, "non-blocking I/O not supported yet" ); */
+	if (!block && cb_queue == NULL)
+		return -1;
 
 	/* Did we quit already? */
 	if (cb_dead)
 		return -1;
 
 	/* Wait for some input to be ready */
-	sem_wait(cb_sem);
+	if (sem_wait_timed(cb_sem, block) < 0)
+		return -1;
 
 	/* Grab the mutex and retrieve the line */
 	sem_wait(cb_mutex);
@@ -154,7 +158,8 @@ static void input_insertbuff(int ch) {
 	input_buffer.text[input_buffer.pos] = ch;
 	input_buffer.pos++;
 
-	conio_putch(ch);
+	if (conio_ttymode != CONIO_TTY_STDIO)
+		conio_putch(ch);
 
 	return;
 }

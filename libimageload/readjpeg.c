@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "../libjpeg/jpeglib.h"
 
 static struct jpeg_decompress_struct cinfo;
