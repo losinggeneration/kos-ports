@@ -63,7 +63,8 @@ void plx_mat3d_mode(int mode);
 #define PLX_MAT_MODELVIEW	1	/** Modelview (rotate, scale) matrix */
 #define PLX_MAT_SCREENVIEW	2	/** Internal screen view matrix */
 #define PLX_MAT_SCRATCH		3	/** Temp matrix for user usage */
-#define PLX_MAT_COUNT		4
+#define PLX_MAT_WORLDVIEW	4	/** Optional camera/worldview matrix */
+#define PLX_MAT_COUNT		5
 
 /** Load an identity matrix */
 void plx_mat3d_identity();
@@ -106,6 +107,9 @@ void plx_mat3d_lookat(const point_t * eye, const point_t * center, const vector_
 
 /** Apply a matrix from one of the matrix modes to the matrix regs */
 void plx_mat3d_apply(int mode);
+
+/** Manually apply a matrix */
+void plx_mat3d_apply_mat(matrix_t * src);
 
 /** Apply all the matrices for a normal 3D scene */
 void plx_mat3d_apply_all();

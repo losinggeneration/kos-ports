@@ -237,6 +237,14 @@ static inline void plx_vert_inp(int flags, float x, float y, float z, uint32 col
 }
 
 /**
+  Like plx_vert_indm3, but uses plx_prim.
+ */
+static inline void plx_vert_inpm3(int flags, float x, float y, float z, uint32 color) {
+	plx_mat_tfip_3d(x, y, z);
+	plx_vert_inp(flags, x, y, z, color);
+}
+
+/**
   Like plx_vert_ffn, but submits the point using plx_prim.
  */
 static inline void plx_vert_ffp(int flags, float x, float y, float z,

@@ -396,6 +396,20 @@ void plx_mat3d_apply(int mode) {
 	}
 }
 
+static matrix_t mam __attribute__((aligned(32))) = {
+	{ 1.0f, 0.0f, 0.0f, 0.0f },
+	{ 0.0f, 1.0f, 0.0f, 0.0f },
+	{ 0.0f, 0.0f, 1.0f, 0.0f },
+	{ 0.0f, 0.0f, 0.0f, 1.0f }
+};
+
+void plx_mat3d_apply_mat(matrix_t * mat) {
+	memcpy(&mam, mat, sizeof(matrix_t));
+	mat_load(trans_mats + matrix_mode);
+	mat_apply(&mam);
+	mat_store(trans_mats + matrix_mode);
+}
+
 void plx_mat3d_apply_all() {
 	mat_identity();
 
@@ -406,16 +420,19 @@ void plx_mat3d_apply_all() {
 	mat_apply(&msv);
 
 	mat_apply(trans_mats + PLX_MAT_PROJECTION);
+	mat_apply(trans_mats + PLX_MAT_WORLDVIEW);
 	mat_apply(trans_mats + PLX_MAT_MODELVIEW);
 }
 
 
 /* Init */
 void plx_mat3d_init() {
+	int i;
+
 	/* Setup all the matrices */
 	mat_identity();
-	mat_store(trans_mats + 0);
-	mat_store(trans_mats + 1);
+	for (i=0; i<PLX_MAT_COUNT; i++)
+		mat_store(trans_mats + i);
 	matrix_mode = PLX_MAT_PROJECTION;
 	mat_mv_stack_top = 0;
 	mat_p_stack_top = 0;
