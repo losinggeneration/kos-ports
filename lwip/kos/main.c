@@ -9,7 +9,6 @@
 
 //****************************** vvv PPP vvv *********************************//
 #include <kos/thread.h>
-#include <arch/dbgio.h>
 #include "lwip/ip_addr.h"
 #include "lwip/sio.h"
 #include "../lwip/src/netif/ppp/ppp.h"

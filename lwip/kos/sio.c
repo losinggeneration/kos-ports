@@ -4,7 +4,7 @@
    Copyright (C)2004 Dan Potter
 */
 
-#include <arch/dbgio.h>
+#include <dc/scif.h>
 #include <kos/thread.h>
 #include <lwip/lwip.h>
 #include "lwip/sio.h"
@@ -24,7 +24,7 @@ sio_fd_t sio_open(u8_t foo) {
 
 	// Clear out anything in the buffer already
 	i = 0;
-	while (dbgio_read() != -1)
+	while (scif_read() != -1)
 		i++;
 	if (i)
 		printf("sio: cleared %d initial chars\n", i);
@@ -33,15 +33,15 @@ sio_fd_t sio_open(u8_t foo) {
 }
 
 void sio_send(u8_t ch, sio_fd_t foo) {
-	dbgio_write(ch);
-	dbgio_flush();
+	scif_write(ch);
+	scif_flush();
 }
 
 u8_t sio_recv(sio_fd_t foo) {
 	int ch;
 
 	do {
-		ch = dbgio_read();
+		ch = scif_read();
 		if (ch == -1)
 			thd_sleep(10);
 	} while (ch == -1 && !sio_abort);
@@ -56,7 +56,7 @@ u32_t sio_read(sio_fd_t foo, u8_t *outbuf, u32_t bufmax) {
 	int i, ch;
 
 	for (i=0; i<bufmax && !sio_abort; i++) {
-		ch = dbgio_read();
+		ch = scif_read();
 		if (ch == -1) {
 			if (i == 0) {
 				thd_sleep(10);
@@ -77,8 +77,8 @@ u32_t sio_write(sio_fd_t foo, u8_t *buf, u32_t buflen) {
 	int i;
 
 	for (i=0; i<buflen && !sio_abort; i++)
-		dbgio_write(buf[i]);
-	dbgio_flush();
+		scif_write(buf[i]);
+	scif_flush();
 
 	sio_abort = 0;
 	return buflen;
