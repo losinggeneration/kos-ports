@@ -20,6 +20,12 @@ int kosh_init();
 /** Call to terminate the KOSH thread on the currently open conio. */
 void kosh_shutdown();
 
+/** Call to add a built-in command to the shell. */
+void builtins_add(const char * cmd, const char * helpmsg, void (*handler)(int argc, char *argv[]));
+
+/** Call to remove an added built-in command from the shell. */
+void builtins_remove(const char * cmd);
+
 __END_DECLS
 
 #endif	/* __KOSH_KOSH_H */

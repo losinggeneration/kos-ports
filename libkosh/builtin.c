@@ -7,34 +7,39 @@
 #include <kos.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/queue.h>
 #include "builtin.h"
 #include "chdir.h"
 #include "kosh.h"
 
-typedef struct {
+typedef struct builtin {
+	SLIST_ENTRY(builtin)	list;
+
 	const char *command;
 	const char *desc;
+
 	void (*handler)(int argc, char *argv[]);
 } builtin_t;
 
-extern builtin_t builtins[];
+SLIST_HEAD(builtin_list, builtin) builtins;
 
 /* print command list/desc */
 static void builtin_help(int argc, char *argv[]) {
 	int i;
+	builtin_t * b;
 
 	if (argc > 1) {
-		for (i = 0; builtins[i].command != NULL; i++) {
-			if (strcmp(argv[1], builtins[i].command) == 0) {
-				conio_printf("%s - %s\n", builtins[i].command, builtins[i].desc);
+		SLIST_FOREACH(b, &builtins, list) {
+			if (strcmp(argv[1], b->command) == 0) {
+				conio_printf("%s - %s\n", b->command, b->desc);
 				return;
 			}
 		}
 	} else {
-		conio_printf("kosh commands:\n  ");
+		conio_printf("KOSH commands:\n  ");
 	
-		for (i = 0; builtins[i].command != NULL; i++) {
-			conio_printf("%s ", builtins[i].command);
+		SLIST_FOREACH(b, &builtins, list) {
+			conio_printf("%s ", b->command);
 		}
 
 		conio_printf("\nType 'help command' for a description.\n");
@@ -375,40 +380,14 @@ static void builtin_sshot(int argc, char *argv[]) {
 #endif
 
 
-/* table of the builtin commands, their help mesg,  and their handler funcs */
-builtin_t builtins[] = {
-	{"help",	"Hmm...",				builtin_help},
-	{"exit", 	"Exit kosh",				builtin_exit},
-	{"ls", 		"List contents of directories",		builtin_ls},
-	{"cd",		"Change directory",			builtin_cd},
-	{"pwd",		"Print the current directory",		builtin_pwd},
-	{"clear",	"Clear the screen",			builtin_clear},
-	{"echo",	"Echo text to the console",		builtin_echo},
-	{"cat",		"Display text files to the console",	builtin_cat},
-	{"hd",		"Dump files as hex to the console",	builtin_hd},
-	{"cp",		"Copy files",				builtin_cp},
-	{"rm",		"Remove files",				builtin_rm},
-	{"mkdir",	"Create a directory",			builtin_mkdir},
-	{"rmdir",	"Delete a directory",			builtin_rmdir},
-	{"theme",	"Change the console color theme",	builtin_theme},
-	{"menu",	"Exit KOS to the DC menus",		builtin_menu},
-	{"mount_romdisk", "Mount a romdisk image",		builtin_mount_romdisk},
-	{"threads",	"Get a list of running threads",	builtin_threads},
-	{"mstats",	"Get memory statistics",		builtin_mstats},
-	{"die",		"Call arch_exit()",			builtin_die},
-#ifdef _arch_dreamcast
-	{"sshot",	"Make a screen shot",			builtin_sshot},
-#endif
-	{ NULL,		NULL,					NULL }
-};
-
 /* try to run a builtin command, return 0 if there is no such builtin */
 int builtin_command(int argc, char *argv[]) {
 	int i;
+	builtin_t * b;
 
-	for (i = 0; builtins[i].command != NULL; i++) {
-		if (strcmp(argv[0], builtins[i].command) == 0) {
-			builtins[i].handler(argc, argv);
+	SLIST_FOREACH(b, &builtins, list) {
+		if (strcmp(argv[0], b->command) == 0) {
+			b->handler(argc, argv);
 			return 1;
 		}
 	}
@@ -416,4 +395,67 @@ int builtin_command(int argc, char *argv[]) {
 	return 0;
 }
 
+void kosh_builtin_add(const char * cmd, const char * helpmsg, void (*handler)(int argc, char *argv[])) {
+	builtin_t * b;
 
+	b = (builtin_t *)calloc(1, sizeof(builtin_t));
+	b->command = cmd;
+	b->desc = helpmsg;
+	b->handler = handler;
+
+	SLIST_INSERT_HEAD(&builtins, b, list);
+}
+
+void kosh_builtin_remove(const char * cmd) {
+	builtin_t * b;
+
+	SLIST_FOREACH(b, &builtins, list) {
+		if (strcmp(cmd, b->command) == 0) {
+			SLIST_REMOVE(&builtins, b, builtin, list);
+			free(b);
+		}
+	}
+}
+
+/* Setup all our builtins */
+void builtins_init() {
+	SLIST_INIT(&builtins);
+
+	/* table of the builtin commands, their help mesg,  and their handler funcs */
+	kosh_builtin_add("help",	"Hmm...",				builtin_help);
+	kosh_builtin_add("exit", 	"Exit kosh",				builtin_exit);
+	kosh_builtin_add("ls",	 	"List contents of directories",		builtin_ls);
+	kosh_builtin_add("cd",		"Change directory",			builtin_cd);
+	kosh_builtin_add("pwd",		"Print the current directory",		builtin_pwd);
+	kosh_builtin_add("clear",	"Clear the screen",			builtin_clear);
+	kosh_builtin_add("echo",	"Echo text to the console",		builtin_echo);
+	kosh_builtin_add("cat",		"Display text files to the console",	builtin_cat);
+	kosh_builtin_add("hd",		"Dump files as hex to the console",	builtin_hd);
+	kosh_builtin_add("cp",		"Copy files",				builtin_cp);
+	kosh_builtin_add("rm",		"Remove files",				builtin_rm);
+	kosh_builtin_add("mkdir",	"Create a directory",			builtin_mkdir);
+	kosh_builtin_add("rmdir",	"Delete a directory",			builtin_rmdir);
+	kosh_builtin_add("theme",	"Change the console color theme",	builtin_theme);
+	kosh_builtin_add("menu",	"Exit KOS to the bios menus",		builtin_menu);
+	kosh_builtin_add("mount_romdisk", "Mount a romdisk image",		builtin_mount_romdisk);
+	kosh_builtin_add("threads",	"Get a list of running threads",	builtin_threads);
+	kosh_builtin_add("mstats",	"Get memory statistics",		builtin_mstats);
+	kosh_builtin_add("die",		"Call arch_exit()",			builtin_die);
+#ifdef _arch_dreamcast
+	kosh_builtin_add("sshot",	"Make a screen shot",			builtin_sshot);
+#endif
+}
+
+/* Kill our list */
+void builtins_shutdown() {
+	builtin_t * c, * n;
+
+	c = SLIST_FIRST(&builtins);
+	while (c) {
+		n = SLIST_NEXT(c, list);
+		free(c);
+		c = n;
+	}
+
+	SLIST_INIT(&builtins);
+}

@@ -9,6 +9,9 @@
 /* the func */
 int builtin_command(int argc, char *argv[]);
 
+void builtins_init();
+void builtins_shutdown();
+
 #endif
 		
 

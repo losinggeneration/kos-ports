@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include "kosh.h"
 #include "chdir.h"
+#include "builtin.h"
 
 /* global exit flag:  if someone sets this we quit */
 volatile int kosh_exit = -2;
@@ -25,12 +26,15 @@ int kosh_init() {
 		return -1;
 
 	kosh_exit = 0;
+	builtins_init();
 	thd_create(kosh_thread, NULL);
 	return 0;
 }
 
 void kosh_shutdown() {
 	if (kosh_exit < 0) {
+		if (kosh_exit == -1)
+			builtins_shutdown();
 		kosh_exit = -2;
 		return;
 	}
@@ -38,5 +42,6 @@ void kosh_shutdown() {
 	kosh_exit = 1;
 	while (kosh_exit != -1)
 		thd_pass();
+	builtins_shutdown();
 	kosh_exit = -2;
 }
