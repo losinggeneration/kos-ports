@@ -355,6 +355,7 @@ void GenericMenu::inputEvent(const Event & evt) {
 		"KeyUnknown"
 	};
 	static const char * devNames[] = {
+		"TypeAll",
 		"TypeController",
 		"TypeKeyboard",
 		"TypeOther",
