@@ -12,6 +12,8 @@
 #include <sys/cdefs.h>
 __BEGIN_DECLS
 
+#include "../../libpng/png.h"
+
 #include <kos/img.h>
 
 /* PNG_MASK_ALPHA currently doesn't work, I don't know why */
