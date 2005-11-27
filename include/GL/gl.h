@@ -90,7 +90,7 @@ typedef float		GLclampd;	/* double precision float in [0,1] */
 #define GL_LINE_STRIP		0 /*4*/
 #define GL_TRIANGLES		5
 #define GL_TRIANGLE_STRIP	6
-#define GL_TRIANGLE_FAN		0 /*7*/
+#define GL_TRIANGLE_FAN		7
 #define GL_QUADS		8
 #define GL_QUAD_STRIP		9
 #define GL_POLYGON		10
