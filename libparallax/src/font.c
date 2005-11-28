@@ -135,7 +135,7 @@ plx_font_t * plx_font_load(const char * fn) {
 		hdr.max_ascent, hdr.max_descent, hdr.glyph_cnt); */
 
 	/* Make sure we can allocate texture space for it */
-	fnt->txr = plx_txr_canvas(hdr.txr_width, hdr.txr_height, PVR_TXRFMT_ARGB1555);
+	fnt->txr = plx_txr_canvas(hdr.txr_width, hdr.txr_height, PVR_TXRFMT_ARGB4444);
 	if (fnt->txr == NULL) {
 		dbglog(DBG_WARNING, "plx_font_load: can't allocate texture for '%s'\n", fn);
 		goto fail_2;	/* bail */
@@ -249,16 +249,15 @@ plx_font_t * plx_font_load(const char * fn) {
 			goto fail_4;	/* bail */
 		}
 
-		/* Convert to ARGB1555 -- go backwards so we can do it in place */
-		/* XXX Technically we should probably switch to ARGB4444 here */
+		/* Convert to ARGB4444 -- go backwards so we can do it in place */
+		/* PLIB seems to duplicate the alpha value into luminance.  I think it
+		 * looks nicer to hardcode luminance to 1.0; characters look more robust. */
 		bmtmp = (uint8 *)txrtmp;
 		for (x=bmsize-1; x>=0; x--) {
-			if (bmtmp[x] == 0)
-				txrtmp[x] = 0x0000;
-			else {
-				int c = ((int)bmtmp[x]) >> 3;
-				txrtmp[x] = 0x8000 | (c << 10) | (c << 5) | (c << 0);
-			}
+			uint8 alpha = (bmtmp[x] & 0xF0) >> 4;
+			/* uint8 lum   = alpha; */
+			uint8 lum   = 0x0f;
+			txrtmp[x] = (alpha << 12) | (lum << 8) | (lum << 4) | (lum << 0);
 		}
 		bmtmp = NULL;
 
