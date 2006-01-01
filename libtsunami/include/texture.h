@@ -49,7 +49,7 @@ public:
 	int		getPxlfmt() const { return m_txr->fmt; }
 	operator plx_texture_t * const() { return m_txr; }
 
-private:
+protected:
 
 	plx_texture_t	* m_txr;
 };
