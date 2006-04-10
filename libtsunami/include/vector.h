@@ -3,7 +3,7 @@
         
    vector.h
 
-   (c)2002 Dan Potter
+   Copyright (C)2002,2003,2004 Dan Potter
 
    $Id: vector.h,v 1.2 2003/04/24 02:57:20 bardtx Exp $
 */
@@ -14,6 +14,7 @@
 #include <kos/vector.h>
 #include <assert.h>
 
+// We can only do the hardware transforms if this is a DC.
 #ifdef _arch_dreamcast
 #	include <dc/fmath.h>
 #else
@@ -23,10 +24,13 @@
 class Matrix;
 class Vector3;
 
-/// A C++ friendly wrapper for the point_t / vector_t struct
+/// A C++ friendly wrapper for the point_t / vector_t struct. Note that
+/// the 'w' value is not actually a fourth dimension but rather a scaling
+/// factor for a homogeneous coordinate. i.e. the real vector/point expressed
+/// by <x,y,z,w> is actually <x/w,y/w,z/w>.
 class Vector {
 public:
-	Vector(float ix, float iy, float iz, float iw = 0.0f)
+	Vector(float ix, float iy, float iz, float iw = 1.0f)
 		: x(ix), y(iy), z(iz), w(iw) { }
 	Vector() { }
 
@@ -137,16 +141,16 @@ public:
 	/// Get the length/magnitude of the vector
 	float length() const {
 #ifdef _arch_dreamcast
-		return fsqrt(x*x+y*y+z*z+w*w);
+		return fsqrt(x*x+y*y+z*z);
 #else
-		return (float)sqrt(x*x+y*y+z*z+w*w);
+		return (float)sqrt(x*x+y*y+z*z);
 #endif
 	}
 
 	/// Returns 1.0/length()
 	float rlength() const {
 #ifdef _arch_dreamcast
-		return frsqrt(x*x+y*y+z*z+w*w);
+		return frsqrt(x*x+y*y+z*z);
 #else
 		return 1.0f/length();
 #endif

@@ -103,9 +103,9 @@ public:
 		return *p;
 	}
 
-	T** operator&() const {
+	/* T** operator&() const {
 		return &p;
-	}
+	} */
 
 	T* operator->() const {
 		assert( p != NULL );

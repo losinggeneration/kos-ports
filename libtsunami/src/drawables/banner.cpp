@@ -98,5 +98,7 @@ void Banner::draw(int list) {
 	vert.u = m_u4;
 	vert.v = m_v4;
 	plx_prim(&vert, sizeof(vert));
+
+	Drawable::draw(list);
 }
 

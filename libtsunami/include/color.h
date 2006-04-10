@@ -53,6 +53,21 @@ struct Color {
 		return *this;
 	}
 
+	// These must be used in some cases because C++ is too dumb to
+	// handle the precedence sensibly...
+	Color mult(const Color & o) const {
+		return Color(a*o.a, r*o.r, g*o.g, b*o.b);
+	}
+	Color mult(float f) const {
+		return Color(a*f, r*f, g*f, b*f);
+	}
+	Color add(const Color & o) const {
+		return Color(a+o.a, r+o.r, g+o.g, b+o.b);
+	}
+	Color sub(const Color & o) const {
+		return Color(a-o.a, r-o.r, g-o.g, b-o.b);
+	}
+
 	operator uint32() const {
 		float ta, tr, tg, tb;
 		ta = (a < 0.0f) ? 0.0f : (a > 1.0f) ? 1.0f : a;
