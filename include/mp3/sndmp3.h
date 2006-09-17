@@ -22,6 +22,9 @@ int sndmp3_start(const char *fn, int loop);
 /* Shut everything down */
 void sndmp3_shutdown();
 
+/* Controls volume of MP3 stream */
+void sndmp3_volume(int vol);
+
 __END_DECLS
 
 #endif	/* __SNDMP3_H */

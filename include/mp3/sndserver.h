@@ -28,6 +28,9 @@ int mp3_stop();
 /* Shuts down the MP3 server thread */
 int mp3_quit();
 
+/* Controls volume level of stream */
+void mp3_volume(int vol);
+
 __END_DECLS
 
 #endif	/* __SNDSERVER_H */

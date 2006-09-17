@@ -20,6 +20,8 @@ int sndserver_thread(void *blagh) {
 }
 
 int mp3_init() {
+	if (snd_stream_init() < 0)
+		return -1;
 	if (thd_create(sndserver_thread, NULL) != NULL) {
 		sndmp3_wait_start();
 		return 0;
@@ -41,4 +43,6 @@ int mp3_shutdown() {
 	return 0;
 }
 
-
+void mp3_volume(int vol) {
+       sndmp3_volume(vol);
+}
