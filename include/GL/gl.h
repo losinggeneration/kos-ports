@@ -102,6 +102,7 @@ typedef float		GLclampd;	/* double precision float in [0,1] */
 #define GL_CULL_FACE            0x0B44
 #define GL_FRONT                0x0404
 #define GL_BACK                 0x0405
+#define GL_FRONT_AND_BACK       0x0408
 
 /* Scissor box */
 #define GL_SCISSOR_TEST		0x0008		/* capability bit */
