@@ -355,6 +355,8 @@ void glBegin(GLenum mode);
 
 void glEnd(void);
 
+void glVertex2f(GLfloat x, GLfloat y);
+
 void glVertex3f(GLfloat x, GLfloat y, GLfloat z);
 
 void glVertex3fv(GLfloat *v);
