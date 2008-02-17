@@ -26,6 +26,7 @@
 	do { \
 		if (!irq_inside_int()) \
 			OLD = irq_disable(); \
+			irq_enable(); \
 		/* suspend any G2 DMA here... */ \
 		while((*(volatile unsigned int *)0xa05f688c) & 0x20) \
 			; \
@@ -43,6 +44,7 @@ void aica_init() {
 	int i, j, old;
 	
 	/* Initialize AICA channels */	
+	g2_fifo_wait();
 	G2_LOCK(old);
 	SNDREG32(0x2800) = 0x0000;
 	
@@ -57,7 +59,6 @@ void aica_init() {
 	}
 
 	SNDREG32(0x2800) = 0x000f;
-	g2_fifo_wait();
 	G2_UNLOCK(old);
 }
 
@@ -164,6 +165,7 @@ void aica_play(int ch,int mode,unsigned long smpptr,int loopst,int loopend,int f
 		asm("nop");
 	}
 */
+	g2_fifo_wait();
 	G2_LOCK(old);
 	/* Envelope setup. The first of these is the loop point,
 	   e.g., where the sample starts over when it loops. The second
@@ -211,7 +213,6 @@ void aica_play(int ch,int mode,unsigned long smpptr,int loopst,int loopend,int f
 
 	/* Enable playback */
 	/* CHNREG32(ch, 0) |= 0xc000; */
-	g2_fifo_wait();
 
 #if 0
 	for (i=0xff; i>=vol; i--) {
@@ -225,8 +226,8 @@ void aica_play(int ch,int mode,unsigned long smpptr,int loopst,int loopend,int f
 
 /* Stop the sound on a given channel */
 void aica_stop(int ch) {
-	g2_write_32(CHNREGADDR(ch, 0),(g2_read_32(CHNREGADDR(ch, 0)) & ~0x4000) | 0x8000);
 	g2_fifo_wait();
+	g2_write_32(CHNREGADDR(ch, 0),(g2_read_32(CHNREGADDR(ch, 0)) & ~0x4000) | 0x8000);
 }
 
 
@@ -236,27 +237,28 @@ void aica_stop(int ch) {
 /* Set channel volume */
 void aica_vol(int ch,int vol) {
 //	g2_write_8(CHNREGADDR(ch, 41),AICA_VOL(vol));
-	g2_write_32(CHNREGADDR(ch, 40),(g2_read_32(CHNREGADDR(ch, 40))&0xffff00ff)|(AICA_VOL(vol)<<8) );
 	g2_fifo_wait();
+	g2_write_32(CHNREGADDR(ch, 40),(g2_read_32(CHNREGADDR(ch, 40))&0xffff00ff)|(AICA_VOL(vol)<<8) );
 }
 
 /* Set channel pan */
 void aica_pan(int ch,int pan) {
 //	g2_write_8(CHNREGADDR(ch, 36),AICA_PAN(pan));
-	g2_write_32(CHNREGADDR(ch, 36),(g2_read_32(CHNREGADDR(ch, 36))&0xffffff00)|(AICA_PAN(pan)) );
 	g2_fifo_wait();
+	g2_write_32(CHNREGADDR(ch, 36),(g2_read_32(CHNREGADDR(ch, 36))&0xffffff00)|(AICA_PAN(pan)) );
 }
 
 /* Set channel frequency */
 void aica_freq(int ch,int freq) {
-	g2_write_32(CHNREGADDR(ch, 24),AICA_FREQ(freq));
 	g2_fifo_wait();
+	g2_write_32(CHNREGADDR(ch, 24),AICA_FREQ(freq));
 }
 
 /* Get channel position */
 int aica_get_pos(int ch) {
 #if 1
 	/* Observe channel ch */
+	g2_fifo_wait();
 	g2_write_32(SNDREGADDR(0x280c),(g2_read_32(SNDREGADDR(0x280c))&0xffff00ff) | (ch<<8));
 	g2_fifo_wait();
 	/* Update position counters */

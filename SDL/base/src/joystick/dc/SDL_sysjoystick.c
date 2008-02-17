@@ -124,6 +124,7 @@ int SDL_SYS_JoystickOpen(SDL_Joystick *joystick)
 
 void SDL_SYS_JoystickUpdate(SDL_Joystick *joystick)
 {
+/*
 const	int sdl_buttons[] = {
 	CONT_C,
 	CONT_B,
@@ -134,6 +135,17 @@ const	int sdl_buttons[] = {
 	CONT_X,
 	CONT_D
 };
+*/
+const	int sdl_buttons[] = {
+	CONT_A,
+	CONT_B,
+	CONT_X,
+	CONT_Y,
+	CONT_START,
+	CONT_C,
+	CONT_D,
+	CONT_Z,
+};
 
 	uint8 addr;
 	cont_cond_t cond,*prev_cond;
@@ -142,7 +154,7 @@ const	int sdl_buttons[] = {
 	addr = SYS_Joystick_addr[joystick->index];
 	if (cont_get_cond(addr,&cond)<0) return;
 
-	buttons = cond.buttons;
+	buttons = cond.buttons ^0xffff;
 	prev_buttons = joystick->hwdata->prev_buttons;
 	changed = buttons^prev_buttons;
 

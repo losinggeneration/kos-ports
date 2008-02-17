@@ -42,6 +42,24 @@ static char rcsid =
 #include "aica.h"
 #include <dc/spu.h>
 
+#define G2_LOCK(OLD) \
+	do { \
+		if (!irq_inside_int()) \
+			OLD = irq_disable(); \
+			irq_enable(); \
+		/* suspend any G2 DMA here... */ \
+		while((*(volatile unsigned int *)0xa05f688c) & 0x20) \
+			; \
+	} while(0)
+
+#define G2_UNLOCK(OLD) \
+	do { \
+		/* resume any G2 DMA here... */ \
+		if (!irq_inside_int()) \
+			irq_restore(OLD); \
+	} while(0)
+
+
 /* Audio driver functions */
 static int DCAUD_OpenAudio(_THIS, SDL_AudioSpec *spec);
 static void DCAUD_WaitAudio(_THIS);
@@ -120,7 +138,7 @@ static void spu_memload_stereo8(int leftpos,int rightpos,void *src0,size_t size)
 	uint32 *right = (uint32*)(rightpos+SPU_RAM_BASE);
 	size = (size+7)/8;
 	while(size--) {
-		unsigned lval,rval;
+		unsigned lval,rval,old;
 		lval = *src++;
 		rval = *src++;
 		lval|= (*src++)<<8;
@@ -129,9 +147,14 @@ static void spu_memload_stereo8(int leftpos,int rightpos,void *src0,size_t size)
 		rval|= (*src++)<<16;
 		lval|= (*src++)<<24;
 		rval|= (*src++)<<24;
-		g2_write_32(*left++,lval);
-		g2_write_32(*right++,rval);
 		g2_fifo_wait();
+		G2_LOCK(old);
+		*left++=lval;
+		*right++=rval;
+		G2_UNLOCK(old);
+	//	g2_write_32(*left++,lval);
+	//	g2_write_32(*right++,rval);
+	//	g2_fifo_wait();
 	}
 }
 
@@ -142,14 +165,19 @@ static void spu_memload_stereo16(int leftpos,int rightpos,void *src0,size_t size
 	uint32 *right = (uint32*)(rightpos+SPU_RAM_BASE);
 	size = (size+7)/8;
 	while(size--) {
-		unsigned lval,rval;
+		unsigned lval,rval,old;
 		lval = *src++;
 		rval = *src++;
 		lval|= (*src++)<<16;
 		rval|= (*src++)<<16;
-		g2_write_32(*left++,lval);
-		g2_write_32(*right++,rval);
 		g2_fifo_wait();
+		G2_LOCK(old);
+		*left++=lval;
+		*right++=rval;
+		G2_UNLOCK(old);
+	//	g2_write_32(*left++,lval);
+	//	g2_write_32(*right++,rval);
+	//	g2_fifo_wait();
 	}
 }
 

@@ -47,12 +47,12 @@ static unsigned start;
 void SDL_StartTicks(void)
 {
 	/* Set first ticks value */
-	start = jiffies;
+	start = timer_ms_gettime64();
 }
 
 Uint32 SDL_GetTicks(void)
 {
-	return((jiffies-start)*1000/HZ);
+	return(timer_ms_gettime64()-start);
 }
 
 void SDL_Delay(Uint32 ms)
