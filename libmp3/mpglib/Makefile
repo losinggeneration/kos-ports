@@ -14,5 +14,5 @@ libmpg.a: $(OBJS)
 clean:
 	rm -f $(OBJS)
 
-include $(KOS_BASE)/Makefile.rules
+include $(TOPDIR)/Makefile.rules
 

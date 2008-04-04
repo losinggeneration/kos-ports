@@ -16,6 +16,6 @@ OBJS = 	jcapimin.o jcapistd.o jccoefct.o jccolor.o jcdctmgr.o jchuff.o \
 OBJS +=	jmemnobs.o
 OBJS += kos_img.o
 
-include $(KOS_BASE)/addons/Makefile.prefab
+include $(TOPDIR)/Makefile.prefab
 
 

@@ -9,7 +9,7 @@ SUBDIRS =
 POSTDIRS = test
 
 BUILD_TARGET = build 
-KOS_CFLAGS += -I. -I../liboggvorbis/libvorbis/include -I../liboggvorbis/libogg/include
+CFLAGS += -I. -I../liboggvorbis/libvorbis/include -I../liboggvorbis/libogg/include
 
 all: subdirs liboggvorbisplay.a 
 
@@ -27,5 +27,5 @@ clean: clean_subdirs
 	-rm -f ./build/*.o
 	-rm -f ./lib/*.a
 
-include $(KOS_BASE)/Makefile.rules
+include $(TOPDIR)/Makefile.rules
 

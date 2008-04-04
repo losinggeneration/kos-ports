@@ -8,6 +8,6 @@
 TARGET = libconio.a
 OBJS =  conio.o input.o draw.o
 
-include $(KOS_BASE)/addons/Makefile.prefab
+include $(TOPDIR)/Makefile.prefab
 
 

@@ -22,4 +22,4 @@ OBJS_TRIGS := $(patsubst %.cpp,%.o,$(wildcard src/triggers/*.cpp))
 OBJS := $(OBJS_MAIN) $(OBJS_DRW) $(OBJS_ANIMS) $(OBJS_TRIGS)
 
 # Grab the shared Makefile pieces
-include $(KOS_BASE)/addons/Makefile.prefab
+include $(TOPDIR)/Makefile.prefab

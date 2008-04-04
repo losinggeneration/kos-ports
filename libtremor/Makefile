@@ -11,4 +11,4 @@ SUBDIRS = xiph kos
 LIB_OBJS = build/*.o
 LOCAL_CLEAN = build/*.o build/*.a
 
-include $(KOS_BASE)/addons/Makefile.prefab
+include $(TOPDIR)/Makefile.prefab

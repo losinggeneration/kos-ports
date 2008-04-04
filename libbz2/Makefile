@@ -7,7 +7,7 @@ OBJS= blocksort.o  \
       decompress.o \
       bzlib.o
 
-KOS_CFLAGS += -I../include/bzlib
+CFLAGS += -I$(TOPDIR)/include/bzlib
 
-include $(KOS_BASE)/addons/Makefile.prefab
+include $(TOPDIR)/Makefile.prefab
 

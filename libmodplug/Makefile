@@ -32,7 +32,7 @@ OBJS=	tables.o         \
 #	load_mt2.o       \
 #	load_psm.o       \
 
-KOS_CFLAGS += -I../include/modplug -DMODPLUG_BASIC_SUPPORT -DFASTSOUNDLIB
+CFLAGS += -I$(TOPDIR)/include/modplug -DMODPLUG_BASIC_SUPPORT -DFASTSOUNDLIB
 
-include $(KOS_BASE)/addons/Makefile.prefab
+include $(TOPDIR)/Makefile.prefab
 

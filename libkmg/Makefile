@@ -8,6 +8,6 @@
 TARGET = libkmg.a
 OBJS = kmg.o
 
-include $(KOS_BASE)/addons/Makefile.prefab
+include $(TOPDIR)/Makefile.prefab
 
 

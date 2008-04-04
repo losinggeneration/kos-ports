@@ -107,7 +107,7 @@ all: $(OBJS)
 	rm -f build/*.o
 	cp -p $(OBJS) build/
 
-include $(KOS_BASE)/Makefile.prefab
+include $(TOPDIR)/Makefile.prefab
 
 clean:
 	rm -f $(LIB) $(OBJS) build/*.o

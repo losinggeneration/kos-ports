@@ -1,6 +1,9 @@
 SUBDIRS := libbz2 libconio libdcplib libgl libimageload libjpeg libkmg libkosh \
 	libmodplug libmp3 liboggvorbis libparallax libpcx libpng libs3m libtga \
-	libtremor libtsunami lua lwip zlib SDL
+	libtremor libtsunami lua zlib SDL
+# lwip
+
+export TOPDIR=${PWD}
 
 all: $(patsubst %, _dir_%, $(SUBDIRS))
 

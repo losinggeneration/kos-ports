@@ -11,4 +11,4 @@ SUBDIRS = xingmp3 libmp3
 LOCAL_CLEAN = build/*.o build/*.a
 # SUBDIRS = mpglib libmp3
 
-include $(KOS_BASE)/addons/Makefile.prefab
+include $(TOPDIR)/Makefile.prefab

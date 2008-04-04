@@ -8,6 +8,6 @@
 TARGET = libpcx.a
 OBJS = pcx.o
 
-include $(KOS_BASE)/addons/Makefile.prefab
+include $(TOPDIR)/Makefile.prefab
 
 

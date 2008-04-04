@@ -4,4 +4,4 @@ LIBS = -lpng -lz -lm -lloadable
 EXPORTS_SYMBOL = exports
 EXPORTS_FILE = exports.txt
 
-include $(KOS_BASE)/loadable/Makefile.prefab
+include $(TOPDIR)/Makefile.loadable

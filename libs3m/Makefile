@@ -9,6 +9,6 @@ TARGET = libs3m.a
 OBJS = sfxmgr.o
 SUBDIRS =
 
-include $(KOS_BASE)/addons/Makefile.prefab
+include $(TOPDIR)/Makefile.prefab
 
 

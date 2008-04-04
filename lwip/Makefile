@@ -19,12 +19,12 @@ ARCHDIR := kos
 all: make-lwip $(OBJS) linklib
 
 # include $(KOS_BASE)/loadable/programs/Makefile.prefab
-include $(KOS_BASE)/addons/Makefile.prefab
+include $(TOPDIR)/Makefile.prefab
 
 make-lwip:
 	$(MAKE) -f Makefile.lwip
 
-KOS_CFLAGS += -DIPv4 \
+CFLAGS += -DIPv4 \
 	-I$(LWIPDIR)/include -I$(ARCHDIR)/include \
 	-I$(LWIPDIR)/include/ipv4
 

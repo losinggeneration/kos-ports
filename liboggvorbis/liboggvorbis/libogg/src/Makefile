@@ -5,7 +5,7 @@
 # Based on KOS Makefiles by Dan Potter
 
 OBJS = framing.o bitwise.o
-KOS_INCS += -I. -I../include -DLITTLE_ENDIAN=1
+CFLAGS += -I. -I$(TOPDIR)/include -DLITTLE_ENDIAN=1
 CFLAGS += -O2
 
 all: libogg.a
@@ -18,5 +18,5 @@ clean:
 	-rm -f $(OBJS) *.a
 	-rm -f ../build/*.o *.a
 
-include $(KOS_BASE)/Makefile.rules
+include $(TOPDIR)/Makefile.rules
 
