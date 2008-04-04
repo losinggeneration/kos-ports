@@ -13,20 +13,14 @@ OBJS := module.o
 LIB_OBJS := build/*.o
 LOCAL_CLEAN := exports.c
 
-LWIPDIR := lwip/src
-ARCHDIR := kos
-
 all: make-lwip $(OBJS) linklib
-
-# include $(KOS_BASE)/loadable/programs/Makefile.prefab
-include $(TOPDIR)/Makefile.prefab
 
 make-lwip:
 	$(MAKE) -f Makefile.lwip
 
 CFLAGS += -DIPv4 \
-	-I$(LWIPDIR)/include -I$(ARCHDIR)/include \
-	-I$(LWIPDIR)/include/ipv4
+	-I$(TOPDIR)/include/lwip -I$(TOPDIR)/include/lwip/kos \
+	-I$(TOPDIR)/include/lwip/ipv4
 
 #exports.o: exports.c
 
@@ -35,3 +29,6 @@ CFLAGS += -DIPv4 \
 
 clean: defaultclean
 	$(MAKE) -f Makefile.lwip clean
+
+# include $(KOS_BASE)/loadable/programs/Makefile.prefab
+include $(TOPDIR)/Makefile.prefab

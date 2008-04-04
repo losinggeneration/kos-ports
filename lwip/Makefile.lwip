@@ -46,15 +46,15 @@
 #
 ###############################################################################
 
-KOS_LOCAL_CFLAGS = -DIPv4 $(INCLUDES)
+CFLAGS += -DIPv4 $(INCLUDES)
 ARCHDIR=kos
 LWIPDIR=lwip/src
 LIB=liblwip4.a
 
 INCLUDES= \
-	-I$(LWIPDIR)/include \
-	-I$(LWIPDIR)/include/ipv4 \
-	-I$(ARCHDIR)/include \
+	-I$(TOPDIR)/include/lwip \
+	-I$(TOPDIR)/include/lwip/ipv4 \
+	-I$(TOPDIR)/include/lwip/kos \
 	-I.
 
 # COREFILES, CORE4FILES: The minimum set of files needed for lwIP.
@@ -71,7 +71,7 @@ COREFILES=$(LWIPDIR)/core/mem.c \
 
 CORE4FILES=$(LWIPDIR)/core/ipv4/icmp.c \
            $(LWIPDIR)/core/ipv4/ip.c \
-	        $(LWIPDIR)/core/inet.c \
+           $(LWIPDIR)/core/inet.c \
            $(LWIPDIR)/core/ipv4/ip_addr.c \
            $(LWIPDIR)/core/ipv4/ip_frag.c
 

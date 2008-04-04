@@ -1,7 +1,6 @@
 SUBDIRS := libbz2 libconio libdcplib libgl libimageload libjpeg libkmg libkosh \
 	libmodplug libmp3 liboggvorbis libparallax libpcx libpng libs3m libtga \
-	libtremor libtsunami lua zlib SDL
-# lwip
+	libtremor libtsunami lua zlib SDL lwip
 
 export TOPDIR=${PWD}
 
