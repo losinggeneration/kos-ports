@@ -11,4 +11,10 @@ SUBDIRS = xiph kos
 LIB_OBJS = build/*.o
 LOCAL_CLEAN = build/*.o build/*.a
 
+install-headers:
+	@echo Skipping Headers for now...
+#	install -d ${KOS_PATH}/include/addons/
+#	install -m 660 $(TOPDIR)/include//*.h ${KOS_PATH}/include/addons//
+
+
 include $(TOPDIR)/Makefile.prefab

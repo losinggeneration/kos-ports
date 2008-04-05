@@ -11,6 +11,10 @@ OBJS =  ulError.o sg.o fnt.o fntTXF.o
 OBJS += sgd.o sgIsect.o
 SUBDIRS =
 
+install-headers:
+	install -d ${KOS_PATH}/include/addons/dcplib
+	install -m 660 $(TOPDIR)/include/dcplib/*.h ${KOS_PATH}/include/addons/dcplib/
+
 include $(TOPDIR)/Makefile.prefab
 
 

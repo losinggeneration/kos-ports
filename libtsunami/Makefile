@@ -21,5 +21,15 @@ OBJS_TRIGS := $(patsubst %.cpp,%.o,$(wildcard src/triggers/*.cpp))
 
 OBJS := $(OBJS_MAIN) $(OBJS_DRW) $(OBJS_ANIMS) $(OBJS_TRIGS)
 
+install-headers:
+	install -d ${KOS_PATH}/include/addons/tsu
+	install -m 660 $(TOPDIR)/include/tsu/*.h ${KOS_PATH}/include/addons/tsu/
+	install -d ${KOS_PATH}/include/addons/tsu/anims
+	install -m 660 $(TOPDIR)/include/tsu/anims/*.h ${KOS_PATH}/include/addons/tsu/anims/
+	install -d ${KOS_PATH}/include/addons/tsu/drawables
+	install -m 660 $(TOPDIR)/include/tsu/drawables/*.h ${KOS_PATH}/include/addons/tsu/drawables/
+	install -d ${KOS_PATH}/include/addons/tsu/triggers
+	install -m 660 $(TOPDIR)/include/tsu/triggers/*.h ${KOS_PATH}/include/addons/tsu/triggers/
+
 # Grab the shared Makefile pieces
 include $(TOPDIR)/Makefile.prefab

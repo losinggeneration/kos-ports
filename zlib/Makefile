@@ -5,4 +5,9 @@ OBJS = adler32.o compress.o crc32.o uncompr.o trees.o deflate.o\
 
 CFLAGS += -I$(TOPDIR)/include/zlib -DNO_ERRNO_H
 
+install-headers:
+	install -d ${KOS_PATH}/include/addons/zlib
+	install -m 660 $(TOPDIR)/include/zlib/*.h ${KOS_PATH}/include/addons/zlib/
+
+
 include $(TOPDIR)/Makefile.prefab

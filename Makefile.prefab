@@ -15,12 +15,16 @@
 # something like build/*.o. You'll also want to define LOCAL_CLEAN to
 # clean your build dir.
 
+# KOS_AR probably shouldn't work directly into KOS_PATH.
+
 # Include the KOS-specific config for the build arch, if any
 -include kos/$(KOS_ARCH).cnf
 
 CFLAGS += -I$(TOPDIR)/include
 
-defaultall: $(OBJS) subdirs linklib
+# install-headers is per-projectly defined
+
+defaultall: install-headers $(OBJS) subdirs linklib
 
 linklib:
 	rm -f $(KOS_PATH)/lib/addons/$(TARGET)

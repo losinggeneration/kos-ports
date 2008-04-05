@@ -7,8 +7,13 @@ LUA= .
 include $(LUA)/config
 include kos/$(KOS_ARCH).cnf
 
+install-headers:
+	install -d ${KOS_PATH}/include/addons/lua
+	install -m 660 $(TOPDIR)/include/lua/*.h ${KOS_PATH}/include/addons/lua/
+
+
 # primary targets (only "all" and "clean" are useful after distribution)
-all:
+all: install-headers
 	cd include; $(MAKE) $@
 	cd src; $(MAKE) $@
 #	cd src/luac; $(MAKE) $@

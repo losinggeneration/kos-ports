@@ -34,5 +34,10 @@ OBJS=	tables.o         \
 
 CFLAGS += -I$(TOPDIR)/include/modplug -DMODPLUG_BASIC_SUPPORT -DFASTSOUNDLIB
 
+install-headers:
+	install -d ${KOS_PATH}/include/addons/modplug
+	install -m 660 $(TOPDIR)/include/modplug/*.h ${KOS_PATH}/include/addons/modplug/
+
+
 include $(TOPDIR)/Makefile.prefab
 

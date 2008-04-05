@@ -10,6 +10,11 @@ OBJS =  gldepth.o gldraw.o glkos.o gllight.o glmisc.o
 OBJS += gltex.o gltrans.o glvars.o glblend.o glfog.o glmodifier.o glnzclip.o
 SUBDIRS =
 
+install-headers:
+	install -d ${KOS_PATH}/include/addons/GL
+	install -m 660 $(TOPDIR)/include/GL/*.h ${KOS_PATH}/include/addons/GL/
+
+
 include $(TOPDIR)/Makefile.prefab
 
 

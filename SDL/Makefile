@@ -5,6 +5,11 @@
 #   
 # $Id: Makefile,v 1.1 2002/12/09 06:09:16 bardtx Exp $
 
+install-headers:
+	install -d ${KOS_PATH}/include/addons/SDL
+	install -m 660 $(TOPDIR)/include/SDL/*.h ${KOS_PATH}/include/addons/SDL/
+
+
 all: 
 	$(MAKE) -C base
 

@@ -16,6 +16,11 @@ OBJS = 	jcapimin.o jcapistd.o jccoefct.o jccolor.o jcdctmgr.o jchuff.o \
 OBJS +=	jmemnobs.o
 OBJS += kos_img.o
 
+install-headers:
+	install -d ${KOS_PATH}/include/addons/jpeg
+	install -m 660 $(TOPDIR)/include/jpeg/*.h ${KOS_PATH}/include/addons/jpeg/
+
+
 include $(TOPDIR)/Makefile.prefab
 
 

@@ -8,10 +8,16 @@ TARGET = liboggvorbisplay.a
 OBJS =
 SUBDIRS = liboggvorbis liboggvorbisplay
 
-all: subdirs copylibs
+all: install-headers subdirs copylibs
 
 # Copy libs from target oggvorbis and oggvorbisplay to root
 copylibs:
-	cp ./liboggvorbisplay/lib/liboggvorbisplay.a $(KOS_PATH)/lib/addons/
+	install ./liboggvorbisplay/lib/liboggvorbisplay.a $(KOS_PATH)/lib/addons/
+
+install-headers:
+	install -d $(KOS_PATH)/lib/addons/oggvorbis
+	install -d $(KOS_PATH)/lib/addons/ogg
+	install -m 660 $(TOPDIR)/include/oggvorbis/*.h $(KOS_PATH)/lib/addons/oggvorbis/
+	install -m 660 $(TOPDIR)/include/ogg/*.h $(KOS_PATH)/lib/addons/ogg/
 
 include $(TOPDIR)/Makefile.prefab

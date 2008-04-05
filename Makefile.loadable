@@ -26,6 +26,7 @@ copy:
 ifdef EXPORTS_SYMBOL
 exports.o: exports.c
 
+# This should probably be copied over to kos-ports if it's used anywhere
 exports.c: $(EXPORTS_FILE)
 	$(TOPDIR)/../kos/utils/genexports/genexports.sh $(EXPORTS_FILE) exports.c $(EXPORTS_SYMBOL)
 endif

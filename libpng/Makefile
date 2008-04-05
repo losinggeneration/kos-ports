@@ -10,4 +10,9 @@ CFLAGS += -I$(TOPDIR)/include/png \
 	-DPNG_NO_SETJMP_SUPPORTED \
 	-DPNG_NO_WRITE_tIME
 
+install-headers:
+	install -d ${KOS_PATH}/include/addons/png
+	install -m 660 $(TOPDIR)/include/png/*.h ${KOS_PATH}/include/addons/png/
+
+
 include $(TOPDIR)/Makefile.prefab
