@@ -13,5 +13,5 @@ libxingmp3.a: $(OBJS)
 clean:
 	-rm -f $(OBJS) libxingmp3.a
 
-include $(TOPDIR)/Makefile.rules
+include $(KOS_PATH)/scripts/Makefile.rules
 

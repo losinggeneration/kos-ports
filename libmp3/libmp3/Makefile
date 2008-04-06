@@ -14,5 +14,5 @@ CFLAGS += -I../xingmp3
 all: $(OBJS)
 	cp $(OBJS) ../build/
 
-include $(TOPDIR)/Makefile.prefab
+include ../../Makefile.prefab
 
