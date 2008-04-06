@@ -1,5 +1,5 @@
 SUBDIRS := libbz2 libconio libdcplib libgl libimageload libjpeg libkmg libkosh \
-	libmodplug libmp3 liboggvorbis libparallax libpcx libpng libs3m libtga \
+	libmodplug libmp3 liboggvorbis libpng libparallax libpcx libs3m libtga \
 	libtremor libtsunami lua zlib SDL lwip
 
 INSTALL_DIR := include
