@@ -18,5 +18,5 @@ all: $(OBJS)
 clean:
 	-rm -f $(OBJS)
 
-include $(TOPDIR)/Makefile.rules
+include $(KOS_PATH)/scripts/Makefile.rules
 
