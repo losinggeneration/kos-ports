@@ -8,9 +8,8 @@
 TARGET = libtga.a
 OBJS = tga.o
 
+include ../Makefile.prefab
+
 install-headers:
 	install -d ${KOS_PATH}/include/addons/tga
-	install -m 660 $(TOPDIR)/include/tga/*.h ${KOS_PATH}/include/addons/tga/
-
-
-include $(TOPDIR)/Makefile.prefab
+	install -m 660 ../include/tga/*.h ${KOS_PATH}/include/addons/tga/

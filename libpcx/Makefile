@@ -8,11 +8,10 @@
 TARGET = libpcx.a
 OBJS = pcx.o
 
+include ../Makefile.prefab
+
 install-headers:
 	install -d ${KOS_PATH}/include/addons/pcx
-	install -m 660 $(TOPDIR)/include/pcx/*.h ${KOS_PATH}/include/addons/pcx/
-
-
-include $(TOPDIR)/Makefile.prefab
+	install -m 660 ../include/pcx/*.h ${KOS_PATH}/include/addons/pcx/
 
 
