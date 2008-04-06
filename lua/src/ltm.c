@@ -9,7 +9,7 @@
 
 #define ltm_c
 
-#include "lua.h"
+#include <lua/lua.h>
 
 #include "lobject.h"
 #include "lstate.h"

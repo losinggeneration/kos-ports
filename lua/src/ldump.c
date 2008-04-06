@@ -8,7 +8,7 @@
 
 #define ldump_c
 
-#include "lua.h"
+#include <lua/lua.h>
 
 #include "lobject.h"
 #include "lopcodes.h"

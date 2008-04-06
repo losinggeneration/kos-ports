@@ -8,7 +8,7 @@
 
 #define lgc_c
 
-#include "lua.h"
+#include <lua/lua.h>
 
 #include "ldebug.h"
 #include "ldo.h"

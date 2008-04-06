@@ -18,9 +18,9 @@
 
 #define lauxlib_c
 
-#include "lua.h"
+#include <lua/lua/lua.h>
 
-#include "lauxlib.h"
+#include <lua/lua/lauxlib.h>
 
 
 /* number of prereserved references (for internal use) */

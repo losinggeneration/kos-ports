@@ -6,7 +6,7 @@
 
 #define lundump_c
 
-#include "lua.h"
+#include <lua/lua.h>
 
 #include "ldebug.h"
 #include "lfunc.h"

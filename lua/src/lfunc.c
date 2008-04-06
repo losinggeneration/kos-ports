@@ -9,7 +9,7 @@
 
 #define lfunc_c
 
-#include "lua.h"
+#include <lua/lua.h>
 
 #include "lfunc.h"
 #include "lgc.h"

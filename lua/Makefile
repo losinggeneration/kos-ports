@@ -40,7 +40,9 @@ install: all strip
 
 install-headers:
 	install -d ${KOS_PATH}/include/addons/lua
+	install -d ${KOS_PATH}/include/addons/lua/lua
 	install -m 660 ../include/lua/*.h ${KOS_PATH}/include/addons/lua/
+	install -m 660 ../include/lua/lua/*.h ${KOS_PATH}/include/addons/lua/lua/
 
 # shared libraries (for Linux)
 so:

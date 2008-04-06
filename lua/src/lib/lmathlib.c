@@ -10,10 +10,10 @@
 
 #define lmathlib_c
 
-#include "lua.h"
+#include <lua/lua/lua.h>
 
-#include "lauxlib.h"
-#include "lualib.h"
+#include <lua/lua/lauxlib.h>
+#include <lua/lua/lualib.h>
 
 
 #undef PI
@@ -86,7 +86,7 @@ static int math_floor (lua_State *L) {
 }
 
 static int math_mod (lua_State *L) {
-  lua_pushnumber(L, fmod(luaL_checknumber(L, 1), luaL_checknumber(L, 2)));
+  lua_pushnumber(L, fmodf(luaL_checknumber(L, 1), luaL_checknumber(L, 2)));
   return 1;
 }
 

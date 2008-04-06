@@ -9,7 +9,7 @@
 
 #define lzio_c
 
-#include "lua.h"
+#include <lua/lua.h>
 
 #include "llimits.h"
 #include "lmem.h"

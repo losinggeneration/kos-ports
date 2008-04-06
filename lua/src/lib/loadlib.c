@@ -26,9 +26,9 @@
 *
 */
 
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
+#include <lua/lua/lua.h>
+#include <lua/lua/lauxlib.h>
+#include <lua/lua/lualib.h>
 
 
 #undef LOADLIB

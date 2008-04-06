@@ -10,7 +10,7 @@
 
 #define llex_c
 
-#include "lua.h"
+#include <lua/lua.h>
 
 #include "ldo.h"
 #include "llex.h"

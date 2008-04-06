@@ -13,10 +13,10 @@
 
 #define ltests_c
 
-#include "lua.h"
+#include <lua/lua.h>
 
 #include "lapi.h"
-#include "lauxlib.h"
+#include <lua/lua/lauxlib.h>
 #include "lcode.h"
 #include "ldebug.h"
 #include "ldo.h"
@@ -26,7 +26,7 @@
 #include "lstate.h"
 #include "lstring.h"
 #include "ltable.h"
-#include "lualib.h"
+#include <lua/lua/lualib.h>
 
 
 

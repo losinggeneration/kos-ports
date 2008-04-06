@@ -9,7 +9,7 @@
 
 #define lparser_c
 
-#include "lua.h"
+#include <lua/lua.h>
 
 #include "lcode.h"
 #include "ldebug.h"

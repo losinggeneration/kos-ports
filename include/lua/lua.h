@@ -13,10 +13,10 @@
 __BEGIN_DECLS
 
 /* Just include the stuff from the Lua tree */
-#include "../../lua/include/lua.h"
-#include "../../lua/include/lauxlib.h"
+#include "lua/lua.h"
+#include "lua/lauxlib.h"
 // #include "../../lua/include/luadebug.h"
-#include "../../lua/include/lualib.h"
+#include "lua/lualib.h"
 
 /* And our fputs shim */
 void luaB_set_fputs(void (* fputs_target)(const char *));
