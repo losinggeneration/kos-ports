@@ -8,10 +8,8 @@
 TARGET = libconio.a
 OBJS =  conio.o input.o draw.o
 
+include ../Makefile.prefab
+
 install-headers:
 	install -d ${KOS_PATH}/include/addons/conio
-	install -m 660 $(TOPDIR)/include/conio/*.h ${KOS_PATH}/include/addons/conio/
-
-include $(TOPDIR)/Makefile.prefab
-
-
+	install -m 660 ../include/conio/*.h ${KOS_PATH}/include/addons/conio/

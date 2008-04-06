@@ -9,12 +9,10 @@ TARGET = libs3m.a
 OBJS = sfxmgr.o
 SUBDIRS =
 
+include ../Makefile.prefab
+
 install-headers:
 	@echo No headers to install?
 #	install -d ${KOS_PATH}/include/addons/
-#	install -m 660 $(TOPDIR)/include//*.h ${KOS_PATH}/include/addons//
-
-
-include $(TOPDIR)/Makefile.prefab
-
+#	install -m 660 ../include//*.h ${KOS_PATH}/include/addons//
 

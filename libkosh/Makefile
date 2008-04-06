@@ -8,9 +8,8 @@
 TARGET = libkosh.a
 OBJS = builtin.o chdir.o kosh.o input.o
 
+include ../Makefile.prefab
+
 install-headers:
 	install -d ${KOS_PATH}/include/addons/kosh
-	install -m 660 $(TOPDIR)/include/kosh/*.h ${KOS_PATH}/include/addons/kosh/
-
-
-include $(TOPDIR)/Makefile.prefab
+	install -m 660 ../include/kosh/*.h ${KOS_PATH}/include/addons/kosh/

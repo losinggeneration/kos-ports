@@ -51,10 +51,10 @@ ARCHDIR=kos
 LWIPDIR=lwip/src
 LIB=liblwip4.a
 
-INCLUDES= \
-	-I$(TOPDIR)/include/lwip \
-	-I$(TOPDIR)/include/lwip/ipv4 \
-	-I$(TOPDIR)/include/lwip/kos \
+CFLAGS += \
+	-I$(KOS_PATH)/include/addons/lwip \
+	-I$(KOS_PATH)/include/addons/lwip/ipv4 \
+	-I$(KOS_PATH)/include/addons/lwip/kos \
 	-I.
 
 # COREFILES, CORE4FILES: The minimum set of files needed for lwIP.
@@ -107,7 +107,7 @@ all: $(OBJS)
 	rm -f build/*.o
 	cp -p $(OBJS) build/
 
-include $(TOPDIR)/Makefile.prefab
+include ../Makefile.prefab
 
 clean:
 	rm -f $(LIB) $(OBJS) build/*.o

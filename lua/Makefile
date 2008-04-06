@@ -7,10 +7,6 @@ LUA= .
 include $(LUA)/config
 include kos/$(KOS_ARCH).cnf
 
-install-headers:
-	install -d ${KOS_PATH}/include/addons/lua
-	install -m 660 $(TOPDIR)/include/lua/*.h ${KOS_PATH}/include/addons/lua/
-
 
 # primary targets (only "all" and "clean" are useful after distribution)
 all: install-headers
@@ -41,6 +37,10 @@ install: all strip
 	$(INSTALL_DATA) include/*.h $(INSTALL_INC)
 	$(INSTALL_DATA) lib/lib* $(INSTALL_LIB)
 	$(INSTALL_DATA) doc/*.1 $(INSTALL_MAN)
+
+install-headers:
+	install -d ${KOS_PATH}/include/addons/lua
+	install -m 660 ../include/lua/*.h ${KOS_PATH}/include/addons/lua/
 
 # shared libraries (for Linux)
 so:

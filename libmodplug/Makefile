@@ -32,12 +32,10 @@ OBJS=	tables.o         \
 #	load_mt2.o       \
 #	load_psm.o       \
 
-CFLAGS += -I$(TOPDIR)/include/modplug -DMODPLUG_BASIC_SUPPORT -DFASTSOUNDLIB
+CFLAGS += -I../include/modplug -DMODPLUG_BASIC_SUPPORT -DFASTSOUNDLIB
+
+include ../Makefile.prefab
 
 install-headers:
 	install -d ${KOS_PATH}/include/addons/modplug
-	install -m 660 $(TOPDIR)/include/modplug/*.h ${KOS_PATH}/include/addons/modplug/
-
-
-include $(TOPDIR)/Makefile.prefab
-
+	install -m 660 ../include/modplug/*.h ${KOS_PATH}/include/addons/modplug/

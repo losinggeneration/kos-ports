@@ -8,11 +8,8 @@
 TARGET = libkmg.a
 OBJS = kmg.o
 
+include ../Makefile.prefab
+
 install-headers:
 	install -d ${KOS_PATH}/include/addons/kmg
-	install -m 660 $(TOPDIR)/include/kmg/*.h ${KOS_PATH}/include/addons/kmg/
-
-
-include $(TOPDIR)/Makefile.prefab
-
-
+	install -m 660 ../include/kmg/*.h ${KOS_PATH}/include/addons/kmg/
