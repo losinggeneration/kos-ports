@@ -235,7 +235,7 @@
  */
 
 #define PNG_INTERNAL
-#include "png.h"
+#include <png/libpng/png.h>
 
 #if defined(PNG_USE_PNGGCCRD)
 

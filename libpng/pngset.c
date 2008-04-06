@@ -14,7 +14,7 @@
  */
 
 #define PNG_INTERNAL
-#include "png.h"
+#include <png/libpng/png.h>
 
 #if defined(PNG_bKGD_SUPPORTED)
 void PNGAPI

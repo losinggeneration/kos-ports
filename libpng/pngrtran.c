@@ -14,7 +14,7 @@
  */
 
 #define PNG_INTERNAL
-#include "png.h"
+#include <png/libpng/png.h>
 
 /* Set the action on getting a CRC error for an ancillary or critical chunk. */
 void PNGAPI

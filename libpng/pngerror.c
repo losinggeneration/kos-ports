@@ -14,7 +14,7 @@
  */
 
 #define PNG_INTERNAL
-#include "png.h"
+#include <png/libpng/png.h>
 
 static void /* PRIVATE */
 png_default_error PNGARG((png_structp png_ptr,

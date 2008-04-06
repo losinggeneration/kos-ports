@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "png.h"        /* libpng header; includes zlib.h */
+#include <png/libpng/png.h>        /* libpng header; includes zlib.h */
 
 /*
  * Writes png images, assumes RGB888 pixel data

@@ -12,7 +12,7 @@
  */
 
 #define PNG_INTERNAL
-#include "png.h"
+#include <png/libpng/png.h>
 
 #if defined(_WIN32_WCE) 
 /* strtod() function is not supported on WindowsCE */

@@ -1,7 +1,7 @@
 #include <kos.h>
 #include <png/png.h>
-#include "png.h"
-#include "readpng.h"
+#include <png/libpng/png.h>
+#include <png/libpng/readpng.h>
 
 /* load an n x n texture from a png */
 

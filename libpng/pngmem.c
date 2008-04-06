@@ -15,7 +15,7 @@
  */
 
 #define PNG_INTERNAL
-#include "png.h"
+#include <png/libpng/png.h>
 
 /* Borland DOS special memory handler */
 #if defined(__TURBOC__) && !defined(_Windows) && !defined(__FLAT__)

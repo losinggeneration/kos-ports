@@ -10,8 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "png.h"        /* libpng header; includes zlib.h */
-#include "readpng.h"    /* typedefs, common macros, public prototypes */
+#include <png/libpng/png.h>        /* libpng header; includes zlib.h */
+#include <png/libpng/readpng.h>    /* typedefs, common macros, public prototypes */
 
 /* This struct will hold our PNG info during procesing */
 typedef struct {

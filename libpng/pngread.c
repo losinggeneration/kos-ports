@@ -12,7 +12,7 @@
  */
 
 #define PNG_INTERNAL
-#include "png.h"
+#include <png/libpng/png.h>
 
 /* Create a PNG structure for reading, and allocate any memory needed. */
 png_structp PNGAPI
