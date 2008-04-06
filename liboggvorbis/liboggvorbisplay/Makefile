@@ -27,5 +27,5 @@ clean: clean_subdirs
 	-rm -f ./build/*.o
 	-rm -f ./lib/*.a
 
-include $(TOPDIR)/Makefile.rules
+include $(KOS_PATH)/scripts/Makefile.rules
 

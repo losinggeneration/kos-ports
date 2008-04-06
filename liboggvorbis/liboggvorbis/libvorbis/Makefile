@@ -11,5 +11,5 @@ all: subdirs
 clean:
 	-rm -rf build/*.o build/*.a lib/*.o lib/*.a
 
-include $(TOPDIR)/Makefile.rules
+include $(KOS_PATH)/scripts/Makefile.rules
 

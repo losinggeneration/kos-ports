@@ -24,7 +24,7 @@ liboggvorbisplay.a:
 	-cp ../libsndoggvorbis/build/*.o build/
 	$(KOS_AR) rcs ./lib/liboggvorbisplay.a build/*.o
 
-include $(TOPDIR)/Makefile.rules
+include $(KOS_PATH)/scripts/Makefile.rules
 
 clean: clean_subdirs
 	-rm -f build/*.o lib/*.a
