@@ -20,8 +20,6 @@
 # Include the KOS-specific config for the build arch, if any
 -include kos/$(KOS_ARCH).cnf
 
-CFLAGS += -I$(TOPDIR)/include
-
 # install-headers is per-projectly defined
 
 defaultall: install-headers $(OBJS) subdirs linklib
@@ -35,4 +33,4 @@ clean: defaultclean
 defaultclean: clean_subdirs
 	-rm -f $(OBJS) $(KOS_PATH)/lib/addons/$(TARGET) $(LOCAL_CLEAN)
 
-include $(TOPDIR)/Makefile.rules
+include $(KOS_PATH)/scripts/Makefile.rules
